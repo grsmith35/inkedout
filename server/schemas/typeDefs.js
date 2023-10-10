@@ -1,6 +1,8 @@
 const { gql } = require('apollo-server');
+const { dateScalar } = require('../models/ScalarTypes');
 
 const typeDefs = gql`
+    scalar Date
 
     type Account {
         _id: ID
