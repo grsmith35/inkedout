@@ -1,69 +1,99 @@
-:root {
-  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
-
-  color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
-
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  -webkit-text-size-adjust: 100%;
-}
-
-a {
-  font-weight: 500;
-  color: #646cff;
-  text-decoration: inherit;
-}
-a:hover {
-  color: #535bf2;
-}
-
 body {
   margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+}
+
+.header-style {
+  background-color: orange;
+}
+
+.sit-left {
+  justify-content: flex-start;
+}
+
+.sit-right {
+  justify-content: flex-end;
+}
+
+.card-text {
   display: flex;
-  place-items: center;
-  min-width: 320px;
-  min-height: 100vh;
+  justify-content: flex-start;
 }
 
-h1 {
-  font-size: 3.2em;
-  line-height: 1.1;
+.flex-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  margin: 2px;
+  border: 1px solid black;
 }
 
-button {
-  border-radius: 8px;
-  border: 1px solid transparent;
-  padding: 0.6em 1.2em;
-  font-size: 1em;
-  font-weight: 500;
-  font-family: inherit;
-  background-color: #1a1a1a;
-  cursor: pointer;
-  transition: border-color 0.25s;
-}
-button:hover {
-  border-color: #646cff;
-}
-button:focus,
-button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
+.bills-name {
+  flex-shrink: 0;
 }
 
-@media (prefers-color-scheme: light) {
-  :root {
-    color: #213547;
-    background-color: #ffffff;
-  }
-  a:hover {
-    color: #747bff;
-  }
-  button {
-    background-color: #f9f9f9;
-  }
+.button-primary {
+  display: flex;
+  justify-content: flex-start;
+}
+
+.x-box {
+  background-color: red;
+}
+
+.check-box {
+  background-color: green;
+}
+
+.nav-link {
+  text-decoration: none;
+  color: gray;
+  margin-left: 0;
+  margin-right: 0;
+  margin-top: 0;
+}
+
+.drop-down {
+  margin-left: 3px;
+}
+
+.date-div {
+  margin-left: 12px;
+  margin-bottom: 12px;
+}
+
+.fixedbutton {
+  position: fixed;
+  bottom: 0px;
+  right: 0px; 
+  /* border: 1px solid black; */
+  font-size: 40px;
+  /* border-radius: 50%; */
+  /* padding-bottom: 3px; */
+  /* padding-top: 3px; */
+  margin-right: 9px;
+  margin-bottom: 9px;
+  color: orange;
+  width: 40px;
+  height: 40px;
+  /* background-color: rgba(255, 114, 0, 0.69); */
+}
+
+.hamburger {
+  height: 30px;
+  width: 30px;
+}
+
+.backcolor {
+  background-color: gray;
+  border-radius: 50%;
 }
