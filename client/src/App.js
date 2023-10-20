@@ -54,7 +54,7 @@ import AddUser from './pages/AddUser';
 
 
 const httpLink = createHttpLink({
-  uri: "http://localhost:3001/graphql",
+  uri: process.env.REACT_APP_SERVER_URL || "http://localhost:3001/graphql",
 
 });
 
