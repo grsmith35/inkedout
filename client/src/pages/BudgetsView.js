@@ -171,7 +171,7 @@ export default function BudgetsView() {
                     <div>Add your First Budget</div>
                 )}
                 <div>
-                    <Button variant="primary" onClick={handleOpenModal}>Add Budget</Button>
+                    <Button variant="primary" className="green-color" onClick={handleOpenModal}>Add Budget</Button>
                 </div>
                 {!!state?.account?.budgets?.length && state?.account?.budgets?.map((budget) => (
                             <div className="card m-3" key={budget._id} id={budget._id}>
