@@ -54,10 +54,9 @@ export default function Home() {
     const handlePostBalance = async () => {
         const updatedBalance = await editBalance({ variables: { _id: state?.account?._id, balance: parseFloat(balanceForm[0].value)}});
         if(!!updatedBalance) {
-            console.log(updatedBalance)
             dispatch({
                 type: UPDATE_ACCOUNT_BALANCE,
-                balance: updatedBalance.data.editBalance
+                balance: updatedBalance.data.editAccountBalance.balance
             })
             setEditPayModal(() => false);
         }

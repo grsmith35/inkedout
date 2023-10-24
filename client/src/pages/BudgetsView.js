@@ -5,14 +5,12 @@ import { useMutation } from "@apollo/client";
 import { ADD_BUDGET, DELETE_BUDGET, EDIT_BUDGET } from "../utils/mutations";
 import { UPDATE_ACCOUNT_BUDGETS } from '../utils/actions';
 import ModalForm from "../Components/ModalForm";
-import accountNumbers from "../utils/congif";
 import auth from "../utils/auth";
 import Login from "./Login";
 
 
 export default function BudgetsView() {
     const [state, dispatch] = useStoreContext()
-    const [totalBudgets, setTotalBudgets] = React.useState(0);
     const [addBudget, setAddBudget] = React.useState(false);
     const [budgetForm, setBudgetForm] = React.useState();
     const [editBudget, setEditBudget] = React.useState(false);
