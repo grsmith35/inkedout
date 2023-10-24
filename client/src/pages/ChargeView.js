@@ -162,7 +162,7 @@ export default function ChargeView() {
                                     <option value='noBudget'>Budget</option>
                                     {state?.account?.budgets?.map((b) => <option value={b._id}>{b.name}</option>)}
                                 </Form.Select>
-                                <Button variant="primary" onClick={handleChargeSearch}>Search</Button>
+                                <Button variant="primary" className='green-color' onClick={handleChargeSearch}>Search</Button>
                             </Form>
                         </Accordion.Body>
                     </Accordion.Item>

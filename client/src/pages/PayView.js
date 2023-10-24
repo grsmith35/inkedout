@@ -227,7 +227,7 @@ export default function PayView() {
                     <div>Add your First Pay Source</div>
                 )}
                 <div>
-                    <Button variant="primary" onClick={handleOpenModal}>Add Pay</Button>
+                    <Button variant="primary" className="green-color" onClick={handleOpenModal}>Add Pay</Button>
                 </div>
                 {!!state?.account?.pays?.length && (state?.account?.pays?.map((pay) => (
                             <div className="card m-3" key={pay.name} id={pay.name}>

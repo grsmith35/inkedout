@@ -26,6 +26,9 @@ code {
 
 .green-color {
   background-color: rgb(4,93,37);
+}
+
+.full-width-button {
   width: 100%;
 }
 

@@ -66,7 +66,7 @@ export default function Login() {
                         <Form.Label>Password</Form.Label>
                         <Form.Control type={'password'} name='password' value={formState.password}/>
                     </Form.Group>
-                    <Button variant='primary' className='green-color' type='submit'>Login</Button>
+                    <Button variant='primary' className='green-color full-width-button' type='submit'>Login</Button>
                     {error && <div className='login-error'>Login Failed</div>}
 
                 </Form>

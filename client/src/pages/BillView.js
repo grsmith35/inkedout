@@ -8,6 +8,8 @@ import { UPDATE_ACCOUNT_BILLS } from "../utils/actions";
 import accountNumbers from "../utils/congif";
 import auth from "../utils/auth";
 import Login from "./Login";
+import EditIcon from "../Components/EditIcon";
+import DeleteIcon from '../Components/DeleteIcon';
 
 export default function BillView() {
     const [totalBills, setTotalBills] = React.useState(0);
@@ -233,18 +235,22 @@ export default function BillView() {
                     <div>Add Your First Bill</div>
                 )}
                 <div>
-                    <Button variant="primary" onClick={handleOpenModal}>Add Bill</Button>
+                    <Button variant="primary" className="green-color" onClick={handleOpenModal}>Add Bill</Button>
                 </div>
                 {!!state?.account?.bills?.length && (state?.account?.bills?.map((bill) => (
                             <div className="card m-3" key={bill._id} id={bill._id}>
-                                <div className="card-title"><h3>{bill.name}</h3></div>
+                                <div className="card-title">
+                                    <h3>{bill.name}</h3>
+                                    <DeleteIcon />
+                                    <EditIcon />
+                                </div>
                                 <hr />
                                 <div className="card-text"><strong className="mr-3">Date of Month billed:</strong>{`${bill.date}`}</div>
                                 <div className="card-text"><strong>Amount:</strong>{` $${bill.amount}`}</div>
                                 <div className="card-text"><strong>Source:</strong>{` ${bill.source}`}</div>
                                 <div className="card-text"><strong>Automated:</strong>
                                     {!bill.automated ? (   
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-x-square-fill x-box" viewBox="0 0 16 16">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="white" className="bi bi-x-square-fill x-box" viewBox="0 0 16 16">
                                                 <path d="M2 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H2zm3.354 4.646L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 1 1 .708-.708z"/>
                                             </svg>
                                         ) : (
@@ -254,8 +260,8 @@ export default function BillView() {
                                         )
                                     }
                                 </div>
-                                <Button variant="primary" id={bill._id} onClick={handleEditBill}>Edit Bill</Button>
-                                <Button variant="danger" id={bill._id} onClick={handleDeleteBill}>Delete Bill</Button>
+                                {/* <Button variant="primary" id={bill._id} onClick={handleEditBill}>Edit Bill</Button>
+                                <Button variant="danger" id={bill._id} onClick={handleDeleteBill}>Delete Bill</Button> */}
                             </div>
                         )))}
             </>
