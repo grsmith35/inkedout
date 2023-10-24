@@ -7,7 +7,6 @@ import { formFieldCreator } from "../utils/helpers";
 export default function ModalForm({title, fields, editFields, closeDialog, submitFunction}) {
 
     const handleFormChange = (e) => {
-        console.log(e)
         const { name, value, type } = e.target;
         const index = fields.map((field) => field.name).indexOf(name);
         

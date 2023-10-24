@@ -34,7 +34,6 @@ const resolvers = {
         },
         getAllCharges: async () => {
             const charges =  await Charge.find()
-            console.log(charges);
             return charges;
         }
     },
