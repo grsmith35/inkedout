@@ -16,8 +16,21 @@ code {
   background-color: rgb(4,93,37);
 }
 
+.large-margin {
+  margin-top: 50px;
+}
+
 .sit-left {
   justify-content: flex-start;
+}
+
+.green-color {
+  background-color: rgb(4,93,37);
+  width: 100%;
+}
+
+.login-error {
+  color: red
 }
 
 .sit-right {

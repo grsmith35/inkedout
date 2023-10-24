@@ -47,7 +47,7 @@ export default function Login() {
     };
 
     return (
-        <div className='container'>
+        <div className='container align-items-center large-margin'>
             <div className='row mx-auto'>
                 {/* <form className='my-auto' onSubmit={handleLogin} onChange={handleFormChange}>
                     <label htmlFor='email' className='row'>Email</label>
@@ -66,7 +66,9 @@ export default function Login() {
                         <Form.Label>Password</Form.Label>
                         <Form.Control type={'password'} name='password' value={formState.password}/>
                     </Form.Group>
-                    <Button variant='primary' type='submit'>Login</Button>
+                    <Button variant='primary' className='green-color' type='submit'>Login</Button>
+                    {error && <div className='login-error'>Login Failed</div>}
+
                 </Form>
             </div>
         </div>

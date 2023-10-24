@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "develop": "concurrently \"cd server && npm run watch\" \"cd client && npm run dev\""
+    "develop": "concurrently \"cd server && npm run watch\" \"cd client && npm start\""
+
   },
   "author": "",
   "license": "ISC",
