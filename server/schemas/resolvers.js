@@ -2,6 +2,7 @@ const { AuthenticationError } = require('apollo-server-express');
 const { Account, Pay, Bill, Budget, Charge } = require('../models');
 const moment = require('moment');
 const { signToken } = require('../utils/auth');
+const { organizeCharges } = require('../utils/helpers');
 
 const resolvers = {
     Query: {
@@ -16,6 +17,17 @@ const resolvers = {
             .populate('pays')
             .populate('bills')
             .populate('budgets')
+        },
+        getAccountSummary: async (parent, { _id, days, startDate }) => {
+            const account = await Account.findOne({ _id: _id })
+            .populate('pays')
+            .populate('bills')
+            .populate('budgets')
+            const charges = await Charge.find({ accountId: _id });
+            // console.log(account, charges)
+            const budgets = await organizeCharges(charges, account.budgets)
+            // console.log(budgets)
+            return account;
         },
         getBudget: async (parent, { _id }) => {
             return await Budget.findOne({ _id: _id })

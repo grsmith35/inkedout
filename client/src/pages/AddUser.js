@@ -37,7 +37,7 @@ export default function AddUser() {
 
     const handleSubmitUser = async () => {
         const newUser = await postUser({
-            variables: { name: '', email: '.com', password: '' }
+            variables: { name: 'riley', email: 'riley@email.com', password: '1234' }
         });
         if(!!newUser) {
             // setChargeAdded(newCharge.data.addCharge);

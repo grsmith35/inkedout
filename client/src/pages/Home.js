@@ -4,10 +4,9 @@ import { QUERY_ACCOUNT, QUERY_CHARGE_RANGE } from '../utils/queries';
 import { useStoreContext } from "../utils/GlobalState";
 import { EDIT_ACCOUNT_BALANCE } from '../utils/mutations';
 import Spinner from 'react-bootstrap/Spinner';
-import { UPDATE_ACCOUNT, UPDATE_ACCOUNT_BALANCE, UPDATE_CHARGES } from '../utils/actions';
+import { UPDATE_ACCOUNT, UPDATE_ACCOUNT_BALANCE, UPDATE_ACCOUNT_SUMMARY_INCOME, UPDATE_ACCOUNT_SUMMARY_BILLS, UPDATE_CHARGES, UPDATE_ACCOUNT_SUMMARY_CHARGES } from '../utils/actions';
 import Table from 'react-bootstrap/Table';
-import { formatDate, getDateArray, createArrayWithDate, sumUp, nextPayDate, organizeCharges } from '../utils/helpers';
-import accountNumbers from '../utils/congif';
+import { getDateArray, createArrayWithDate, sumUp, nextPayDate, organizeCharges } from '../utils/helpers';
 import moment from 'moment';
 import ModalForm from '../Components/ModalForm';
 import Form from 'react-bootstrap/Form'
@@ -18,7 +17,6 @@ export default function Home() {
     const [editBalance] = useMutation(EDIT_ACCOUNT_BALANCE)
     const [upcomingBills, setUpcomingBills] = React.useState();
     const [upcomingPay, setUpcomingPay] = React.useState();
-    const [remainingAmount, setRemainingAmount] = React.useState();
     const [remaningBudgets, setRemainingBudgets] = React.useState();
     const [editPayModal, setEditPayModal] = React.useState(false);
     const [state, dispatch] = useStoreContext();
@@ -40,11 +38,20 @@ export default function Home() {
         const weeklyBills = state?.account?.bills?.filter((bill) => datesComing.includes(parseInt(bill.date)));
         const finalBills = createArrayWithDate(weeklyBills);
         setUpcomingBills(() => finalBills);
+        dispatch({
+            type: UPDATE_ACCOUNT_SUMMARY_BILLS,
+            bills: finalBills
+        })
+
     };
 
     const handleSetUpcomingPay = () => {
         const datesComing = getDateArray();
-        setUpcomingPay(() => nextPayDate(state?.account?.pays, datesComing))
+        setUpcomingPay(() => nextPayDate(state?.account?.pays, datesComing));
+        dispatch({
+            type: UPDATE_ACCOUNT_SUMMARY_INCOME,
+            income: nextPayDate(state?.account?.pays, datesComing)
+        })
     };
 
     const handleEditBalance = () => {
@@ -96,15 +103,20 @@ export default function Home() {
             handleSetUpcomingBills();
             handleSetUpcomingPay();
             getCharges();
-            
         }
     }, [data]);
 
     React.useEffect(() => {
         if(state?.charges) {
-            setRemainingBudgets(() => organizeCharges(state.charges, state.account.budgets))
+            setRemainingBudgets(() => organizeCharges(state.charges, state.account.budgets));
+            dispatch({
+                type: UPDATE_ACCOUNT_SUMMARY_CHARGES,
+                charges: organizeCharges(state.charges, state.account.budgets)
+            })
         }
-    }, [state?.charges])
+    }, [state?.charges]);
+
+    console.log(state, remaningBudgets)
 
 
     if(auth.loggedIn()) {
@@ -130,12 +142,14 @@ export default function Home() {
                     <div className='container'>
                         <div className='mx-auto'>
                             <h3>
+                                Summary
+                            </h3>
                             <Form.Select name={'period-field'}>
                                 <option value={'7 Day Look Ahead'}>7 Day Look Ahead</option>
                                 <option value={'2 Week Look Ahead'}>2 Week Look Ahead</option>
                                 <option value={'1 Month Look Ahead'}>1 Month look Ahead</option>
                             </Form.Select>
-                            </h3>
+                            
                         </div>
                         {/* <div className='mx-auto'><h3>7 Day Look Ahead</h3></div> */}
                         <hr />
@@ -155,7 +169,7 @@ export default function Home() {
                         <div style={{ backgroundColor: 'red'}}> Non-Automated Bills Due</div>
                         <Table striped bordered hover size='sm'>
                             <tbody>
-                                {upcomingBills?.filter((e) => !e.automated)?.map((bill) => (
+                                {state?.accountSummary?.bills?.filter((e) => !e.automated)?.map((bill) => (
                                     <tr>
                                         <td>{bill.name}</td>
                                         <td>{bill.date}</td>
@@ -167,7 +181,7 @@ export default function Home() {
                         <div style={{ backgroundColor: 'yellow'}}>Automated Bills Due</div>
                         <Table striped bordered hover size='sm'>
                             <tbody>
-                                {upcomingBills?.filter((e) => e.automated)?.map((bill) => (
+                                {state?.accountSummary?.bills?.filter((e) => e.automated)?.map((bill) => (
                                     <tr>
                                         <td>{bill.name}</td>
                                         <td>{bill.date}</td>
@@ -181,13 +195,13 @@ export default function Home() {
                             <div className='col'>
                                 Balance After Bills
                             </div>
-                            <div className='col'>${state?.account?.balance - sumUp(upcomingBills?.map((b) => b.amount))}</div>
+                            <div className='col'>${state?.account?.balance - sumUp(state?.accountSummary?.bills?.map((b) => b.amount))}</div>
                         </div>
                         <hr />
                         <div style={{ backgroundColor: 'green' }}>Upcoming Income</div>
                         <Table striped bordered hover size='sm'>
                             <tbody>
-                                {upcomingPay?.map((p) => (
+                                {state?.accountSummary?.income?.map((p) => (
                                     <tr>
                                         <td>{p.name}</td>
                                         <td>{p.date}</td>
@@ -201,7 +215,7 @@ export default function Home() {
                             <div className='col'>
                                 Balance After Income
                             </div>
-                            <div className='col'>${state?.account?.balance - sumUp(upcomingBills?.map((b) => b.amount)) + sumUp(upcomingPay?.map((p) => p.amount))}</div>
+                            <div className='col'>${state?.account?.balance - sumUp(state?.accountSummary?.bills?.map((b) => b.amount)) + sumUp(state?.accountSummary?.income?.map((p) => p.amount))}</div>
                         </div>
                         <hr />
                         <div style={{ backgroundColor: 'blue' }}>Budgets</div>
@@ -214,7 +228,7 @@ export default function Home() {
                                 </tr>
                             </thead>
                             <tbody>
-                                {remaningBudgets?.map((b) => (
+                                {state?.accountSummary?.charges?.map((b) => (
                                     <tr>
                                         <td>{b.name}</td>
                                         <td>${b.amount}</td>
@@ -228,7 +242,7 @@ export default function Home() {
                             <div className='col'>
                                 Balance After Budgets
                             </div>
-                            <div className='col'>${state?.account?.balance - sumUp(upcomingBills?.map((b) => b.amount)) + sumUp(upcomingPay?.map((p) => p.amount)) - sumUp(remaningBudgets?.map((b) => {
+                            <div className='col'>${state?.account?.balance - sumUp(state?.accountSummary?.bills?.map((b) => b.amount)) + sumUp(state?.accountSummary?.income?.map((p) => p.amount)) - sumUp(state?.accountSummary?.charges?.map((b) => {
                                 if(b.remainingAmount > 0) {
                                     return b.remainingAmount
                                 } else {

@@ -1,5 +1,5 @@
 import { useReducer } from "react";
-import { UPDATE_ACCOUNT, UPDATE_ACCOUNT_BALANCE, UPDATE_ACCOUNT_ID, UPDATE_ACCOUNT_BILLS, UPDATE_ACCOUNT_PAYS, UPDATE_ACCOUNT_BUDGETS, UPDATE_CHARGES } from "./actions";
+import { UPDATE_ACCOUNT, UPDATE_ACCOUNT_BALANCE, UPDATE_ACCOUNT_SUMMARY_BUDGETS, UPDATE_ACCOUNT_SUMMARY_INCOME, UPDATE_ACCOUNT_SUMMARY_BILLS, UPDATE_ACCOUNT_SUMMARY_CHARGES, UPDATE_ACCOUNT_ID, UPDATE_ACCOUNT_BILLS, UPDATE_ACCOUNT_PAYS, UPDATE_ACCOUNT_BUDGETS, UPDATE_CHARGES } from "./actions";
 
 export const reducer = (state, action) => {
     switch(action.type) {
@@ -48,6 +48,38 @@ export const reducer = (state, action) => {
                 account: {
                     ...state?.account,
                     balance: action.balance
+                }
+            }
+        case UPDATE_ACCOUNT_SUMMARY_CHARGES:
+            return {
+                ...state,
+                accountSummary: {
+                    ...state?.accountSummary,
+                    charges: action.charges
+                }
+            }
+        case UPDATE_ACCOUNT_SUMMARY_BILLS:
+            return {
+                ...state,
+                accountSummary: {
+                    ...state?.accountSummary,
+                    bills: action.bills
+                }
+            }
+        case UPDATE_ACCOUNT_SUMMARY_BUDGETS:
+            return {
+                ...state,
+                accountSummary: {
+                    ...state?.accountSummary,
+                    budgets: action.budgets
+                }
+            }
+        case UPDATE_ACCOUNT_SUMMARY_INCOME:
+            return {
+                ...state,
+                accountSummary: {
+                    ...state?.accountSummary,
+                    income: action.income
                 }
             }
         default:

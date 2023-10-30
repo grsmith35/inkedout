@@ -1,30 +1,3 @@
-// import logo from './logo.svg';
-// import './App.css';
-
-// function App() {
-//   return (
-//     <div className="App">
-//       <header className="App-header">
-//         <img src={logo} className="App-logo" alt="logo" />
-//         <p>
-//           Edit <code>src/App.js</code> and save to reload.
-//         </p>
-//         <a
-//           className="App-link"
-//           href="https://reactjs.org"
-//           target="_blank"
-//           rel="noopener noreferrer"
-//         >
-//           Learn React
-//         </a>
-//       </header>
-//     </div>
-//   );
-// }
-
-// export default App;
-
-import logo from './logo.svg';
 import './App.css';
 import Login from './pages/Login';
 import Header from './Components/Header';
@@ -39,11 +12,9 @@ import { ApolloClient,
   ApolloProvider,
   createHttpLink, } from '@apollo/client';
   import { setContext } from '@apollo/client/link/context';
-  import { BrowserRouter as Router, Routes, Route, Outlet, Link } from 'react-router-dom';
+  import { Routes, Route, Outlet, Link } from 'react-router-dom';
 import { StoreProvider } from './utils/GlobalState';
-import Container from 'react-bootstrap/Container';
 import Nav from 'react-bootstrap/Nav';
-import Navbar from 'react-bootstrap/Navbar';
 import Dropdown from 'react-bootstrap/Dropdown';
 import NavItem from 'react-bootstrap/NavItem';
 import NavLink from 'react-bootstrap/NavLink';
@@ -79,7 +50,7 @@ function App() {
       <div className="App">
           <Header />
           <StoreProvider>
-            <BudgetGet />
+            {/* <BudgetGet /> */}
               <Routes>
                 <Route path='/' element={<Layout />}>
                   <Route index element={<Home />} />
@@ -94,13 +65,12 @@ function App() {
                 </Route>      
               </Routes>
               <AddIcon />
-            {/* {auth.loggedIn() ? (<AddIcon />) : (<></>)} */}
+            {auth.loggedIn() ? (<AddIcon />) : (<></>)}
           </StoreProvider>
       </div>
     </ApolloProvider>
   );
 }
-
 
 function Layout() {
 
@@ -110,11 +80,11 @@ function Layout() {
 
   return (
     <div>
-      {auth.loggedIn() ? (
+      {/* {auth.loggedIn() ? (
         <Nav>
           <Dropdown as={NavItem} className='justify-content-end align-items-end'>
             <Dropdown.Toggle as={NavLink}>
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="green" class="bi bi-list hamburger" viewBox="0 0 16 16">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="green" className="bi bi-list hamburger" viewBox="0 0 16 16">
                 <path fill-rule="evenodd" d="M2.5 12a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5zm0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5zm0-4a.5.5 0 0 1 .5-.5h10a.5.5 0 0 1 0 1H3a.5.5 0 0 1-.5-.5z"/>
               </svg>
             </Dropdown.Toggle>
@@ -127,9 +97,8 @@ function Layout() {
               <Dropdown.Item id="Charges"><Link to="/" onClick={handleLogout} className='nav-link'>Log Out</Link></Dropdown.Item>
             </Dropdown.Menu>
           </Dropdown>
-          {/* <div className='justify-content-center'>{page}</div> */}
         </Nav>
-      ): (<></>)}
+      ): (<></>)} */}
       <Outlet />
     </div>
   )

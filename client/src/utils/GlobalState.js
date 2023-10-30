@@ -10,6 +10,7 @@ const StoreProvider = ({ value = [], ...props}) => {
         accountId: {},
         account: {},
         charges: [],
+        accountSummary: {}
     });
 
     return <Provider value={[state, dispatch]} {...props} />;

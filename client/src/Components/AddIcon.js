@@ -1,13 +1,19 @@
 import React from 'react';
 import ModalForm from './ModalForm';
-import { useMutation } from '@apollo/client';
+import { useMutation, useLazyQuery } from '@apollo/client';
 import { ADD_CHARGE } from '../utils/mutations';
+import { QUERY_ACCOUNT } from '../utils/queries';
+import { UPDATE_ACCOUNT } from '../utils/actions';
 import { useStoreContext } from '../utils/GlobalState';
 import moment from 'moment';
 
 export default function AddIcon() {
     const [addCharge, setAddCharge] = React.useState(false);
     const [state, dispatch] = useStoreContext();
+    const [updateAccount] = useLazyQuery(QUERY_ACCOUNT, {
+        variables: { _id: localStorage.getItem('accountId') }
+    });
+
     const [chargeForm, setChargeForm] = React.useState();
     const [postCharge] = useMutation(ADD_CHARGE);
     const [chargeAdded, setChargeAdded] = React.useState();
@@ -49,16 +55,25 @@ export default function AddIcon() {
         });
         if(!!newCharge) {
             setChargeAdded(newCharge.data.addCharge);
-            setAddCharge(false);
         }
     };
+
+    const handleUpdateAccount = async () => {
+        const account = await updateAccount();
+        dispatch({
+            type: UPDATE_ACCOUNT,
+            account: account.data.getAccount
+        })
+    }
 
     const handleCloseModal = () => {
         setAddCharge(false);
     };
 
     React.useEffect(() => {
-        
+        handleUpdateAccount();
+        setAddCharge(false);
+
     }, [chargeAdded])
 
     return (

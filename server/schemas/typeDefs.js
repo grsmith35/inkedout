@@ -56,6 +56,7 @@ const typeDefs = gql`
         getBudget(_id: ID!): Budget
         getAllCharges: [Charge]
         getCharges(accountId: ID! startDate: Date, endDate: Date, budgetId: ID): [Charge]
+        getAccountSummary(_id: ID!, days: Int!): Account
     }
 
     type Auth {
