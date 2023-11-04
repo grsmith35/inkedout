@@ -167,6 +167,45 @@ export default function PayView() {
     }
 
     const handleOpenModal = () => {
+        setPayForm([
+            {
+                title: "Income Source",
+                type: "text",
+                name: "name",
+                value: ""
+            },
+            {
+                title: "Consistency",
+                type: "dropdown",
+                items: [{ value: "Weekly", name: "weekly" }, {value: "Bi-weekly", name: "Bi-weekly" }, { value: "Bi-monthly", name: "Bi-monthly" }, { value: "Monthly", name: "Monthly" }],
+                name: 'consistency',
+                value: ""
+            },   
+            {
+                title: "Source",
+                type: "text",
+                name: 'source',
+                value: ""
+            },
+            {
+                title: "Amount",
+                type: "number",
+                name: "amount",
+                value: "0"
+            },
+            {
+                title: "Pay Date(s)",
+                type: "text",
+                name: "payDate",
+                value: ""
+            },
+            {
+                title: "Pay Week",
+                type: "date",
+                name: "payWeek",
+                value: null
+            },
+        ])
         setAddPay(true)
     };
 

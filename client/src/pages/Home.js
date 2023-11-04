@@ -73,6 +73,10 @@ export default function Home() {
         setEditPayModal(() => false)
     };
 
+    const handleTimeChange = (e) => {
+        console.log(e.target.value)
+    }
+
     const getCharges = async () => {
         const date = parseInt(moment().day(Date()).format('d'));
         const today = moment().format('MM/DD/YYYY');
@@ -116,9 +120,6 @@ export default function Home() {
         }
     }, [state?.charges]);
 
-    console.log(state, remaningBudgets)
-
-
     if(auth.loggedIn()) {
 
         return (
@@ -144,18 +145,18 @@ export default function Home() {
                             <h3>
                                 Summary
                             </h3>
-                            <Form.Select name={'period-field'}>
-                                <option value={'7 Day Look Ahead'}>7 Day Look Ahead</option>
-                                <option value={'2 Week Look Ahead'}>2 Week Look Ahead</option>
-                                <option value={'1 Month Look Ahead'}>1 Month look Ahead</option>
+                            <Form.Select name={'period-field'} onChange={handleTimeChange}>
+                                <option value={'0'}>Select a time Period</option>
+                                <option value={'7'}>7 Day Look Ahead</option>
+                                <option value={'14'}>2 Week Look Ahead</option>
+                                <option value={'30'}>30 Day look Ahead</option>
                             </Form.Select>
                             
                         </div>
-                        {/* <div className='mx-auto'><h3>7 Day Look Ahead</h3></div> */}
                         <hr />
                         <div className='row'>
                             <div className='col'>
-                                Expected Balance
+                                Current Balance
                             </div>
                             <div className='col'>
                                 <svg onClick={handleEditBalance} xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-pencil-square me-1" viewBox="0 0 16 16">
@@ -166,7 +167,7 @@ export default function Home() {
                             </div>
                         </div>
                         <hr />
-                        <div style={{ backgroundColor: 'red'}}> Non-Automated Bills Due</div>
+                        <div className='graph-header-style'> Non-Automated Bills Due</div>
                         <Table striped bordered hover size='sm'>
                             <tbody>
                                 {state?.accountSummary?.bills?.filter((e) => !e.automated)?.map((bill) => (
@@ -178,7 +179,7 @@ export default function Home() {
                                 ))}
                             </tbody>
                         </Table>
-                        <div style={{ backgroundColor: 'yellow'}}>Automated Bills Due</div>
+                        <div className='graph-header-style'>Automated Bills Due</div>
                         <Table striped bordered hover size='sm'>
                             <tbody>
                                 {state?.accountSummary?.bills?.filter((e) => e.automated)?.map((bill) => (
@@ -198,7 +199,7 @@ export default function Home() {
                             <div className='col'>${state?.account?.balance - sumUp(state?.accountSummary?.bills?.map((b) => b.amount))}</div>
                         </div>
                         <hr />
-                        <div style={{ backgroundColor: 'green' }}>Upcoming Income</div>
+                        <div className='graph-header-style'>Upcoming Income</div>
                         <Table striped bordered hover size='sm'>
                             <tbody>
                                 {state?.accountSummary?.income?.map((p) => (
@@ -218,7 +219,7 @@ export default function Home() {
                             <div className='col'>${state?.account?.balance - sumUp(state?.accountSummary?.bills?.map((b) => b.amount)) + sumUp(state?.accountSummary?.income?.map((p) => p.amount))}</div>
                         </div>
                         <hr />
-                        <div style={{ backgroundColor: 'blue' }}>Budgets</div>
+                        <div className='graph-header-style'>Budgets</div>
                         <Table striped bordered hover size='sm'>
                             <thead>
                                 <tr>

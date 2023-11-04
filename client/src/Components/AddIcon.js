@@ -59,11 +59,13 @@ export default function AddIcon() {
     };
 
     const handleUpdateAccount = async () => {
-        const account = await updateAccount();
-        dispatch({
-            type: UPDATE_ACCOUNT,
-            account: account.data.getAccount
-        })
+        if(state?.account?._id) {
+            const account = await updateAccount();
+            dispatch({
+                type: UPDATE_ACCOUNT,
+                account: account.data.getAccount
+            })
+        }
     }
 
     const handleCloseModal = () => {
@@ -73,7 +75,6 @@ export default function AddIcon() {
     React.useEffect(() => {
         handleUpdateAccount();
         setAddCharge(false);
-
     }, [chargeAdded])
 
     return (

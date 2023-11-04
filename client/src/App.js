@@ -50,7 +50,6 @@ function App() {
       <div className="App">
           <Header />
           <StoreProvider>
-            {/* <BudgetGet /> */}
               <Routes>
                 <Route path='/' element={<Layout />}>
                   <Route index element={<Home />} />
@@ -64,7 +63,6 @@ function App() {
                   <Route path="*" element={<Home />} />
                 </Route>      
               </Routes>
-              <AddIcon />
             {auth.loggedIn() ? (<AddIcon />) : (<></>)}
           </StoreProvider>
       </div>

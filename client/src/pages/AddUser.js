@@ -37,22 +37,13 @@ export default function AddUser() {
 
     const handleSubmitUser = async () => {
         const newUser = await postUser({
-            variables: { name: 'riley', email: 'riley@email.com', password: '1234' }
+            variables: { name: 'Demo Account', email: 'Demo@email.com', password: '1234' }
         });
-        if(!!newUser) {
-            // setChargeAdded(newCharge.data.addCharge);
-            // setAddCharge(false);
-            console.log(newUser)
-        }
     };
 
     const handleCloseModal = () => {
         setAddCharge(false);
     };
-
-    // React.useEffect(() => {
-        
-    // }, [chargeAdded])
 
     return (
         <div>

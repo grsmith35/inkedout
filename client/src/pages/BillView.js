@@ -150,7 +150,7 @@ export default function BillView() {
 
     const handlePatchBill = async () => {
         const editedBill = await editBillPatch({
-            variables: { _id: editBillId, name: billsForm[0].value, date: billsForm[1].value, source: billsForm[2].value, amount: parseFloat(billsForm[3].value), automated: billsForm[4].value }
+            variables: { _id: editBillId, name: billsForm[0].value, date: billsForm[1].value, source: billsForm[2].value, amount: parseFloat(billsForm[3].value), automated: billsForm[4].value === 'on' }
         });
         if(!!editedBill) {
             setBillEdited(editedBill.data.editBill);

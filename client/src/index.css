@@ -16,8 +16,21 @@ code {
   background-color: rgb(4,93,37);
 }
 
+.graph-header-style {
+  background-color: rgb(4,93,37);
+  color: white;
+}
+
 .large-margin {
   margin-top: 50px;
+}
+
+.faded-green-color {
+  background-color: rgba(4,93,37,.5);
+}
+
+.green-color:disabled {
+  background-color: rgba(4,93,37,.5) !important;
 }
 
 .sit-left {
