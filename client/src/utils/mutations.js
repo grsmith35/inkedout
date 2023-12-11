@@ -33,7 +33,7 @@ export const EDIT_ACCOUNT = gql`
 `;
 
 export const EDIT_ACCOUNT_BALANCE = gql`
-    mutation editAccount($_id: ID!, $balance: Int!) {
+    mutation editAccount($_id: ID!, $balance: Float!) {
         editAccountBalance(_id: $_id, balance: $balance) {
             _id
             balance
@@ -51,7 +51,7 @@ export const DELETE_ACCOUNT = gql`
 `;
 
 export const ADD_PAY = gql`
-    mutation addPay($_id: ID!, $name: String!, $consistency: String!, $source: String!, $amount: Int! $payDate: String, $payWeek: String) {
+    mutation addPay($_id: ID!, $name: String!, $consistency: String!, $source: String!, $amount: Float! $payDate: String, $payWeek: String) {
         addPay(_id: $_id, name: $name, consistency: $consistency, source: $source, amount: $amount, payDate: $payDate, payWeek: $payWeek) {
             _id
             name
@@ -65,7 +65,7 @@ export const ADD_PAY = gql`
 `;
 
 export const EDIT_PAY = gql`
-    mutation editPay($_id: ID!, $name: String, $source: String, $consistency: String, $amount: Int, $payDate: String, $payWeek: String) {
+    mutation editPay($_id: ID!, $name: String, $source: String, $consistency: String, $amount: Float, $payDate: String, $payWeek: String) {
         editPay(_id: $_id, name: $name, source: $source, consistency: $consistency, amount: $amount, payDate: $payDate, payWeek: $payWeek) {
             _id
             name
@@ -89,7 +89,7 @@ export const DELETE_PAY = gql`
 `;
 
 export const ADD_BILL = gql`
-    mutation addBill($_id: ID!, $name: String!, $date: String!, $source: String!, $amount: Int!, $automated: Boolean!) {
+    mutation addBill($_id: ID!, $name: String!, $date: String!, $source: String!, $amount: Float!, $automated: Boolean!) {
         addBill(_id: $_id, name: $name, date: $date, source: $source, amount: $amount, automated: $automated) {
             _id
             name
@@ -102,7 +102,7 @@ export const ADD_BILL = gql`
 `;
 
 export const EDIT_BILL = gql`
-    mutation editBill($_id: ID!, $name: String, $date: String, $source: String, $amount: Int, $automated: Boolean) {
+    mutation editBill($_id: ID!, $name: String, $date: String, $source: String, $amount: Float, $automated: Boolean) {
         editBill(_id: $_id, name: $name, date: $date, source: $source, amount: $amount, automated: $automated) {
             _id
             name
@@ -125,7 +125,7 @@ export const DELETE_BILL = gql`
 `;
 
 export const ADD_BUDGET = gql`
-    mutation addBudget($_id: ID!, $name: String!, $timePeriod: String!, $amount: Int!) {
+    mutation addBudget($_id: ID!, $name: String!, $timePeriod: String!, $amount: Float!) {
         addBudget(_id: $_id, name: $name, timePeriod: $timePeriod, amount: $amount) {
             _id
             name
@@ -136,7 +136,7 @@ export const ADD_BUDGET = gql`
 `;
 
 export const EDIT_BUDGET = gql`
-    mutation editBudget($_id: ID!, $name: String, $timePeriod: String, $amount: Int) {
+    mutation editBudget($_id: ID!, $name: String, $timePeriod: String, $amount: Float) {
         editBudget(_id: $_id, name: $name, timePeriod: $timePeriod, amount: $amount) {
             _id,
             name

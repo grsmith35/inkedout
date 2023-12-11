@@ -57,3 +57,35 @@ export const QUERY_ALL_CHARGES = gql`
         }
     }
 `;
+
+export const QUERY_ACCOUNT_SUMMARY = gql`
+    query getAccountSummary($_id: ID!, $days: Int!, $startDate: String!) {
+        getAccountSummary(_id: $_id, days: $days, startDate: $startDate) {
+            _id
+            name
+            email
+            balance
+            bills {
+                _id
+                name
+                source
+                date
+                amount
+                automated
+            }
+            pays {
+                _id
+                name
+                consistency
+                source
+                amount
+            }
+            budgets {
+                _id
+                amount
+                name
+                timePeriod
+            }
+        }
+    }
+`;

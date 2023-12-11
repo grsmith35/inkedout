@@ -1,15 +1,13 @@
 import React from 'react';
 import { useStoreContext } from '../utils/GlobalState';
 import Button from 'react-bootstrap/Button';
-import Col from 'react-bootstrap/Col';
 import Form from 'react-bootstrap/Form';
 import Spinner from 'react-bootstrap/Spinner';
-import Row from 'react-bootstrap/Row';
 import { useLazyQuery, useMutation, useQuery } from '@apollo/client';
 import Accordion from 'react-bootstrap/Accordion';
-import { QUERY_CHARGE_RANGE, QUERY_ALL_CHARGES } from '../utils/queries';
+import { QUERY_CHARGE_RANGE } from '../utils/queries';
 import { EDIT_CHARGE, DELETE_CHARGE } from '../utils/mutations';
-import { UPDATE_CHARGES } from '../utils/actions';
+import { UPDATE_CHARGES, UPDATE_SEARCHED_CHARGES } from '../utils/actions';
 import moment from 'moment/moment';
 import ModalForm from '../Components/ModalForm';
 import auth from "../utils/auth";
@@ -19,14 +17,10 @@ export default function ChargeView() {
     const [state, dispatch] = useStoreContext();
     const [searchCharges, { loading, called }] = useLazyQuery(QUERY_CHARGE_RANGE);
     const [editCharge, setEditCharge] = React.useState(false);
-    const [chargeEdited, setChargeEdited] = React.useState();
     const [chargeForm, setChargeForm] = React.useState();
     const [deleteCharge] = useMutation(DELETE_CHARGE);
-    const [deletedChargeId, setDeletedChargeId] = React.useState();
     const [searchForm, setSearchForm] = React.useState();
     const [patchCharge] = useMutation(EDIT_CHARGE);
-    const [charges, setCharges] = React.useState();
-    const [chargeToEdit, setChargeToEdit] = React.useState();
     const [chargeToEditId, setChargeToEditId] = React.useState();
 
     const handleChargeSearch = async (e) => {
@@ -38,7 +32,12 @@ export default function ChargeView() {
             },
             fetchPolicy: 'no-cache'
         });
-        setCharges(searchedCharges?.data?.getCharges ?? []);
+        if(searchedCharges) {
+            dispatch({
+                type: UPDATE_SEARCHED_CHARGES,
+                searchedCharges: searchedCharges.data.getCharges
+            })
+        }
     };
 
     const handleSetSearchCriteria = (e) => {
@@ -68,7 +67,7 @@ export default function ChargeView() {
     }
 
     const handleEditCharge = (e) => {
-        const chargeToEdit = state.charges.find((c) => c._id === e.target.id);
+        const chargeToEdit = state.searchedCharges.find((c) => c._id === e.target.id);
         setChargeToEditId(chargeToEdit._id)
         setChargeForm([
             {
@@ -106,35 +105,17 @@ export default function ChargeView() {
             variables: { _id: e.target.id}
         })
         if(!!deletedCharge) {
-            setDeletedChargeId(e.target.id);
+            const chargeList = state.charges.filter((c) =>  c._id != deletedCharge?._id);
+            dispatch({
+                type: UPDATE_CHARGES,
+                charges: chargeList
+            });
         }
     };
 
     const handleCloseModal = () => {
         setEditCharge(false)
     }
-
-    React.useEffect(() => {
-        if(!!deletedChargeId) {
-            const chargeList = state.charges.filter((c) =>  c._id != deletedChargeId);
-            dispatch({
-                type: UPDATE_CHARGES,
-                charges: chargeList
-            });
-        }
-    }, [deletedChargeId]);
-
-    React.useEffect(() => {
-        if(!!charges) {
-            dispatch({
-                type: UPDATE_CHARGES,
-                charges: charges
-            })
-        }
-        setCharges();
-    }, [charges]);
-
-    console.log(state)
 
     if(auth.loggedIn()) {
 
@@ -177,7 +158,7 @@ export default function ChargeView() {
                     </div>
                 ) : (
                     <div>
-                        {state?.charges?.length > 0 ? (state?.charges?.map((c) => 
+                        {state?.searchedCharges?.length > 0 ? (state?.searchedCharges?.map((c) => 
                         <div className="card m-3" key={c._id} id={c._id}>
                             <div className="card-title">
                                 <h3>{c.name}</h3>
@@ -198,7 +179,7 @@ export default function ChargeView() {
                             <hr />
                             <div className="card-text"><strong className="mr-3">Date:</strong>{`${moment(c.date).format('MM/DD/YYYY')}`}</div>
                             <div className="card-text"><strong>Amount:</strong>{`$${c.amount}`}</div>
-                            <div className="card-text"><strong>Budget:</strong>{`${state?.account?.budgets?.find((b) => b._id === c.budgetId).name}`}</div>
+                            <div className="card-text"><strong>Budget:</strong>{`${state?.account?.budgets?.find((b) => b._id === c.budgetId)?.name}`}</div>
                         </div>
                 )) : (
                     <div>{called ? 'No Charges for this period.' : ''}</div>

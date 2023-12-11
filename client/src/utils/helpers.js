@@ -80,6 +80,29 @@ export function formFieldCreator(field) {
     }
 };
 
+export function getDateArrayWithAmount(days) {
+    const datesComing = [];
+    const date = moment().format('D');
+    const daysInMonth = moment().daysInMonth();
+    if(parseInt(date) + days > daysInMonth) {
+        for(let i = parseInt(date); i <= daysInMonth; i++) {
+            datesComing.push(i)
+        }
+        const numLeft = days - datesComing.length;
+        for(let i = 1; i <= numLeft; i++) {
+            datesComing.push(i)
+        }
+
+        //handle end of the month stuff
+    } else {
+        //handle earlier in the month stuff
+        for(let i = 0; i < 7; i++) {
+            datesComing.push(parseInt(date) + i)
+        }
+    }
+    return datesComing;
+}
+
 export function getDateArray() {
     const datesComing = [];
     const date = moment().format('D');
@@ -150,7 +173,10 @@ export const sumUp = (array) => {
     const sum = array?.reduce((acc, cur) => {
         return acc + cur;
     }, 0);
-    return sum
+    if(!!sum) {
+        return sum
+    }
+    return 0;
 };
 
 export const nextPayDate = (pays, datesArr) => {
@@ -181,9 +207,8 @@ export const nextPayDate = (pays, datesArr) => {
             case "Bi-monthly":
                 const payDays = pays[i].payDate.split(', ');
                 const payIntDays = payDays.map((e) => parseInt(e));
-                const dates = getDateArray();
                 for(let i = 0; i < payIntDays.length; i++) {
-                    if(dates.includes(payIntDays[i])) {
+                    if(datesArr.includes(payIntDays[i])) {
                         const payDate = formatDate(payIntDays[i])
                         comingPay.push({...pays[i], date: payDate })
                     }

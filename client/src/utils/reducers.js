@@ -1,5 +1,5 @@
 import { useReducer } from "react";
-import { UPDATE_ACCOUNT, UPDATE_ACCOUNT_BALANCE, UPDATE_ACCOUNT_SUMMARY_BUDGETS, UPDATE_ACCOUNT_SUMMARY_INCOME, UPDATE_ACCOUNT_SUMMARY_BILLS, UPDATE_ACCOUNT_SUMMARY_CHARGES, UPDATE_ACCOUNT_ID, UPDATE_ACCOUNT_BILLS, UPDATE_ACCOUNT_PAYS, UPDATE_ACCOUNT_BUDGETS, UPDATE_CHARGES } from "./actions";
+import { UPDATE_ACCOUNT, UPDATE_SEARCHED_CHARGES, UPDATE_ACCOUNT_BALANCE, UPDATE_ACCOUNT_SUMMARY_BUDGETS, UPDATE_ACCOUNT_SUMMARY_INCOME, UPDATE_ACCOUNT_SUMMARY_BILLS, UPDATE_ACCOUNT_SUMMARY_CHARGES, UPDATE_ACCOUNT_ID, UPDATE_ACCOUNT_BILLS, UPDATE_ACCOUNT_PAYS, UPDATE_ACCOUNT_BUDGETS, UPDATE_CHARGES } from "./actions";
 
 export const reducer = (state, action) => {
     switch(action.type) {
@@ -81,6 +81,11 @@ export const reducer = (state, action) => {
                     ...state?.accountSummary,
                     income: action.income
                 }
+            }
+        case UPDATE_SEARCHED_CHARGES:
+            return {
+                ...state,
+                searchedCharges: action.searchedCharges
             }
         default:
             return state

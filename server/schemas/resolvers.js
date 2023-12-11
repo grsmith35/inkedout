@@ -2,7 +2,7 @@ const { AuthenticationError } = require('apollo-server-express');
 const { Account, Pay, Bill, Budget, Charge } = require('../models');
 const moment = require('moment');
 const { signToken } = require('../utils/auth');
-const { organizeCharges } = require('../utils/helpers');
+const { nextPayDate, getDatesArray, getBudgetRemainder } = require('../utils/helpers');
 
 const resolvers = {
     Query: {
@@ -19,14 +19,34 @@ const resolvers = {
             .populate('budgets')
         },
         getAccountSummary: async (parent, { _id, days, startDate }) => {
+            const accountbudgets = [];
+            const startDateUse = `${moment().format('MM')}/${startDate}/${moment().format('YYYY')}`
             const account = await Account.findOne({ _id: _id })
             .populate('pays')
             .populate('bills')
             .populate('budgets')
-            const charges = await Charge.find({ accountId: _id });
-            // console.log(account, charges)
-            const budgets = await organizeCharges(charges, account.budgets)
-            // console.log(budgets)
+            console.log(days, startDate)
+            // const charges = await Charge.find({ accountId: _id });
+            account.bills = account.bills.filter((b) => getDatesArray(startDate, days).includes(parseInt(b.date)));
+            account.pays = account.pays.filter((p) => nextPayDate())
+            account.pays = nextPayDate(account?.pays, getDatesArray(startDate, days));
+            for(let i = 0; i < account?.budgets?.length; i++) {
+                const budgetCharges = await Charge.find({ 
+                    accountId: _id, 
+                    budgetId: account?.budgets[i]?._id.toString() 
+                })
+                // if(!!budgetCharges?.length > 0) {
+                //     budgetCharges.filter((c) => {
+                //         moment(c.date).isAfter(startDateUse) && moment(c.date).isBefore(moment(startDateUse).add(days, 'days'))
+                //     })
+                // }
+                // console.log(budgetCharges.filter((c) => moment(c.date).isAfter(startDateUse) && moment(c.date).isBefore(moment(startDateUse).add(days, 'days'))))
+                accountbudgets.push(getBudgetRemainder(budgetCharges.filter((c) => moment(c.date).isAfter(startDateUse) && moment(c.date).isBefore(moment(startDateUse).add(days, 'days'))), account?.budgets[i], days))
+            }
+            account.budgets = accountbudgets
+            // console.log(startDateUse)
+            // const budgets = await organizeCharges(charges, account.budgets)
+            // console.log(account)
             return account;
         },
         getBudget: async (parent, { _id }) => {
@@ -47,6 +67,11 @@ const resolvers = {
         getAllCharges: async () => {
             const charges =  await Charge.find()
             return charges;
+        },
+        getBalance: async () => {
+            const bankInfo = await fetch('https://www.boredapi.com/api/activity')
+            const result = await bankInfo.json();
+            console.log(result)
         }
     },
     Mutation: {
@@ -78,7 +103,7 @@ const resolvers = {
         editAccountBalance: async (parent, { _id, balance }) => {
             return await Account.findOneAndUpdate(
                 { _id: _id },
-                { $set: { balance: balance }},
+                { $set: { balance: !Number.isInteger(balance) ? balance : parseFloat(`${balance.toString()}.00`) }},
                 { new: true }
             )
         },
@@ -90,7 +115,7 @@ const resolvers = {
                 name: args.name, 
                 consistency: args.consistency, 
                 source: args.source, 
-                amount: args.amount,
+                amount: !Number.isInteger(args.amount) ? args.amount : parseFloat(`${args.amount.toString()}.00`),
                 payDate: args.payDate,
                 payWeek: args.payWeek,
             });
@@ -102,6 +127,9 @@ const resolvers = {
             return pay;
         },
         editPay: async (parent, args) => {
+            if(!!Number.isInteger(args.amount)) {
+                args.amount = parseFloat(`${args.amount.toString()}.00`)
+            }
             return await Pay.findOneAndUpdate(
                 { _id: args._id },
                 { $set: args },
@@ -122,7 +150,7 @@ const resolvers = {
                 name: args.name,
                 source: args.source,
                 date: args.date,
-                amount: args.amount,
+                amount: !Number.isInteger(args.amount) ? args.amount : parseFloat(`${args.amount.toString()}.00`),
                 automated: args.automated
             })
             const addBillToAccount = await Account.findOneAndUpdate(
@@ -133,6 +161,9 @@ const resolvers = {
             return bill;
         },
         editBill: async (parent, args) => {
+            if(!!Number.isInteger(args.amount)) {
+                args.amount = parseFloat(`${args.amount.toString()}.00`)
+            }
             return await Bill.findOneAndUpdate(
                 { _id: args._id },
                 { $set: args },

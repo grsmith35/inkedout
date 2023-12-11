@@ -21,8 +21,10 @@ export default function Header() {
         <header className="bd-header header-style py-3 d-flex mb-3 align-items-stretch border-bottom border-dark">
             <div className="container-fluid d-flex align-items-center">
                 <h1 className="d-flex align-items-center fs-4 text-white mb-0">
-                    <img src={img} width='50' height='50' className="me-3" />
-                    Be Better Budgeter
+                  <Link to="/Home" className="App-header-link">
+                      <img src={img} width='50' height='50' className="me-3" />
+                      Be Better Budgeter
+                    </Link>
                 </h1>
             </div>
             {auth.loggedIn() && (

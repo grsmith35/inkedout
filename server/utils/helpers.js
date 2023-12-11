@@ -133,6 +133,56 @@ const nextPayDate = (pays, datesArr) => {
 
 const getBudgetCharges = async (budgetId) => {
     return await Charge.find({ budgetId: budgetId })
+};
+
+const getDatesArray = (date, days) => {
+    const daysArr = [];
+    for(let i = 0; i < days; i++) {
+        daysArr.push(parseInt(date) + i)
+    };
+    return daysArr;
+}
+
+const getBudgetRemainder = (charges, budget, days) => {
+    const weeklyBudget = budget.timePeriod === 'Monthly' ? budget.amount/4 : budget.amount;
+    let budgetStartingAmount = 0;
+    switch(budget.timePeriod) {
+        case 'Weekly':
+            budgetStartingAmount = (budget.amount/7)*days;
+            break;
+        case 'Bi-weekly':
+            budgetStartingAmount = (budget.amount/14)*days;
+            break;
+        case 'Bi-monthly':
+            budgetStartingAmount = (budget.amount/15)*days;
+            break;
+        case 'Monthly':
+            budgetStartingAmount = (budget.amount/30)*days;
+            break
+    };
+
+    // const bbudget = {
+    //     _id: budget._id,
+    //     name: budget.name,
+    //     amount: weeklyBudget,
+    //     charges: charges,
+    //     remainingAmount : budgetStartingAmount - charges.map((e) => e.amount).reduce((val, acc) => {
+    //         return val + acc;
+    //     }, 0)
+    // };
+
+    // console.log('in budget creator' , bbudget)
+
+    return {
+        _id: budget._id,
+        name: budget.name,
+        amount: weeklyBudget,
+        charges: charges.filter((c) => c.budgetId === budget._id),
+        remainingAmount : budgetStartingAmount - charges.map((e) => e.amount).reduce((val, acc) => {
+            return val + acc;
+        }, 0)
+    }
+
 }
 
 const organizeCharges = async (charges, budgets) => {
@@ -152,4 +202,4 @@ const organizeCharges = async (charges, budgets) => {
     return budgetStatus;
 }
 
-module.exports = { organizeCharges, nextPayDate, sumUp, getPayDays, createArrayWithDate }
+module.exports = { organizeCharges, getBudgetRemainder, nextPayDate, sumUp, getPayDays, createArrayWithDate, getDatesArray }

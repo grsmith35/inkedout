@@ -1,12 +1,12 @@
 import React from 'react';
 import { useLazyQuery, useQuery, useMutation } from '@apollo/client';
-import { QUERY_ACCOUNT, QUERY_CHARGE_RANGE } from '../utils/queries';
+import { QUERY_ACCOUNT, QUERY_CHARGE_RANGE, QUERY_ACCOUNT_SUMMARY } from '../utils/queries';
 import { useStoreContext } from "../utils/GlobalState";
 import { EDIT_ACCOUNT_BALANCE } from '../utils/mutations';
 import Spinner from 'react-bootstrap/Spinner';
-import { UPDATE_ACCOUNT, UPDATE_ACCOUNT_BALANCE, UPDATE_ACCOUNT_SUMMARY_INCOME, UPDATE_ACCOUNT_SUMMARY_BILLS, UPDATE_CHARGES, UPDATE_ACCOUNT_SUMMARY_CHARGES } from '../utils/actions';
+import { UPDATE_ACCOUNT, UPDATE_ACCOUNT_BALANCE, UPDATE_CHARGES, UPDATE_ACCOUNT_SUMMARY_CHARGES } from '../utils/actions';
 import Table from 'react-bootstrap/Table';
-import { getDateArray, createArrayWithDate, sumUp, nextPayDate, organizeCharges } from '../utils/helpers';
+import { getDateArrayWithAmount, createArrayWithDate, nextPayDate, organizeCharges } from '../utils/helpers';
 import moment from 'moment';
 import ModalForm from '../Components/ModalForm';
 import Form from 'react-bootstrap/Form'
@@ -14,9 +14,9 @@ import auth from "../utils/auth";
 import Login from "./Login";
 
 export default function Home() {
-    const [editBalance] = useMutation(EDIT_ACCOUNT_BALANCE)
-    const [upcomingBills, setUpcomingBills] = React.useState();
-    const [upcomingPay, setUpcomingPay] = React.useState();
+    const [editBalance] = useMutation(EDIT_ACCOUNT_BALANCE);
+    const [getAccountSum, { called }] = useLazyQuery(QUERY_ACCOUNT_SUMMARY);
+    const [daysView, setDaysView] = React.useState(7);
     const [remaningBudgets, setRemainingBudgets] = React.useState();
     const [editPayModal, setEditPayModal] = React.useState(false);
     const [state, dispatch] = useStoreContext();
@@ -33,25 +33,70 @@ export default function Home() {
         variables: { _id: localStorage.getItem('accountId')}
     });
 
-    const handleSetUpcomingBills = () => {
-        const datesComing = getDateArray();
+    const handleGetUpcomingBills = (automated) => {
+        let finalBills;
+        const datesComing = getDateArrayWithAmount(daysView);
         const weeklyBills = state?.account?.bills?.filter((bill) => datesComing.includes(parseInt(bill.date)));
-        const finalBills = createArrayWithDate(weeklyBills);
-        setUpcomingBills(() => finalBills);
-        dispatch({
-            type: UPDATE_ACCOUNT_SUMMARY_BILLS,
-            bills: finalBills
-        })
-
+        if(automated) {
+            finalBills = createArrayWithDate(weeklyBills)?.filter((e) => e.automated)
+        } else {
+            finalBills = createArrayWithDate(weeklyBills)?.filter((e) => !e.automated)
+        }
+        if(finalBills?.length > 0) {
+            return (
+                <>
+                    {finalBills.map((bill) => (
+                        <tr key={bill.name}>
+                            <td>{bill.name}</td>
+                            <td>{bill.date}</td>
+                            <td>${bill.amount}</td>
+                        </tr>
+                    ))}
+                </>
+            )
+        } else return <>No upcoming Bills</>
     };
 
-    const handleSetUpcomingPay = () => {
-        const datesComing = getDateArray();
-        setUpcomingPay(() => nextPayDate(state?.account?.pays, datesComing));
-        dispatch({
-            type: UPDATE_ACCOUNT_SUMMARY_INCOME,
-            income: nextPayDate(state?.account?.pays, datesComing)
-        })
+    const handleGetTotalAfterBills = () => {
+        const datesComing = getDateArrayWithAmount(daysView);
+        const upcomingBills = state?.account?.bills?.filter((bill) => datesComing.includes(parseInt(bill.date)));
+        return state?.account?.balance - upcomingBills?.reduce((acc, cur) => acc + cur.amount,0);
+    }
+
+    const handleGetBalanceAfterIncome = () => {
+        const datesComing = getDateArrayWithAmount(daysView);
+        const upcomingBills = state?.account?.bills?.filter((bill) => datesComing.includes(parseInt(bill.date)));
+        const upcomingPays =  nextPayDate(state?.account?.pays, datesComing);
+        return state?.account?.balance - upcomingBills?.reduce((acc, cur) => acc + cur.amount,0) + upcomingPays?.reduce((acc, cur) => acc + cur.amount, 0);
+    };
+
+    const handleGetFinalBalance = () => {
+        const datesComing = getDateArrayWithAmount(daysView);
+        const upcomingBills = state?.account?.bills?.filter((bill) => datesComing.includes(parseInt(bill.date)));
+        const upcomingPays =  nextPayDate(state?.account?.pays, datesComing);
+        return state?.account?.balance - upcomingBills.reduce((acc, cur) => acc + cur.amount,0) + upcomingPays.reduce((acc, cur) => acc + cur.amount, 0) - state?.accountSummary?.charges.reduce((acc, cur) => acc + cur.remainingAmount, 0)
+    };
+
+    const handleGetUpcomingPay = () => {
+        const datesComing = getDateArrayWithAmount(daysView);
+        const upcomingPays =  nextPayDate(state?.account?.pays, datesComing);
+        if(upcomingPays?.length > 0) {
+            return (
+                <>
+                    {upcomingPays.map((p) => (
+                        <tr key={p.name}>
+                            <td>{p.name}</td>
+                            <td>{p.date}</td>
+                            <td>${p.amount}</td>
+                        </tr>
+                    ))}
+                </>
+            )
+        } else {
+            return (
+                <>No Upcoming Income</>
+            )
+        }
     };
 
     const handleEditBalance = () => {
@@ -73,15 +118,24 @@ export default function Home() {
         setEditPayModal(() => false)
     };
 
-    const handleTimeChange = (e) => {
-        console.log(e.target.value)
-    }
+    // const handleTimeChange = async (e) => {
+    //     const date = parseInt(moment().day(Date()).format('d'));
+    //     const today = moment().format('MM/DD/YYYY');
+    //     const startSearchDate = moment(today).subtract(date, 'days').format('M/D/YYYY');
+    //     const results = await getAccountSum({
+    //         variables: {
+    //             _id: state?.account?._id,
+    //             days: parseInt(e.target.value),
+    //             startDate: startSearchDate
+    //         }
+    //     });
+    // }
 
     const getCharges = async () => {
         const date = parseInt(moment().day(Date()).format('d'));
         const today = moment().format('MM/DD/YYYY');
         const startSearchDate = moment(today).subtract(date, 'days').format('M/D/YYYY');
-        const endSearchDate = moment(startSearchDate).add(7, 'days').format('M/D/YYYY');
+        const endSearchDate = moment(startSearchDate).add(daysView, 'days').format('M/D/YYYY');
         if(state?.account?._id) {
 
             const charges = await periodCharges({
@@ -104,11 +158,15 @@ export default function Home() {
                 type: UPDATE_ACCOUNT,
                 account: data.getAccount
             });
-            handleSetUpcomingBills();
-            handleSetUpcomingPay();
             getCharges();
         }
     }, [data]);
+
+    React.useEffect(() => {
+        if(!!state?.account) {
+            getCharges()
+        }
+    }, [daysView])
 
     React.useEffect(() => {
         if(state?.charges) {
@@ -121,7 +179,6 @@ export default function Home() {
     }, [state?.charges]);
 
     if(auth.loggedIn()) {
-
         return (
             <div>
                 {!!editPayModal && (
@@ -145,8 +202,7 @@ export default function Home() {
                             <h3>
                                 Summary
                             </h3>
-                            <Form.Select name={'period-field'} onChange={handleTimeChange}>
-                                <option value={'0'}>Select a time Period</option>
+                            <Form.Select name={'period-field'} onChange={(e) => setDaysView(parseInt(e.target.value))}>
                                 <option value={'7'}>7 Day Look Ahead</option>
                                 <option value={'14'}>2 Week Look Ahead</option>
                                 <option value={'30'}>30 Day look Ahead</option>
@@ -168,27 +224,16 @@ export default function Home() {
                         </div>
                         <hr />
                         <div className='graph-header-style'> Non-Automated Bills Due</div>
+                        
                         <Table striped bordered hover size='sm'>
                             <tbody>
-                                {state?.accountSummary?.bills?.filter((e) => !e.automated)?.map((bill) => (
-                                    <tr>
-                                        <td>{bill.name}</td>
-                                        <td>{bill.date}</td>
-                                        <td>${bill.amount}</td>
-                                    </tr>
-                                ))}
+                                {handleGetUpcomingBills(false)}
                             </tbody>
                         </Table>
                         <div className='graph-header-style'>Automated Bills Due</div>
                         <Table striped bordered hover size='sm'>
                             <tbody>
-                                {state?.accountSummary?.bills?.filter((e) => e.automated)?.map((bill) => (
-                                    <tr>
-                                        <td>{bill.name}</td>
-                                        <td>{bill.date}</td>
-                                        <td>${bill.amount}</td>
-                                    </tr>
-                                ))}
+                                {handleGetUpcomingBills(true)}
                             </tbody>
                         </Table>
                         <hr />
@@ -196,27 +241,25 @@ export default function Home() {
                             <div className='col'>
                                 Balance After Bills
                             </div>
-                            <div className='col'>${state?.account?.balance - sumUp(state?.accountSummary?.bills?.map((b) => b.amount))}</div>
+                            {/* <div className='col'>${state?.account?.balance - sumUp(state?.account?.bills?.map((b) => b.amount))}</div> */}
+                            <div className='col'>${handleGetTotalAfterBills()}</div>
+
                         </div>
                         <hr />
                         <div className='graph-header-style'>Upcoming Income</div>
-                        <Table striped bordered hover size='sm'>
-                            <tbody>
-                                {state?.accountSummary?.income?.map((p) => (
-                                    <tr>
-                                        <td>{p.name}</td>
-                                        <td>{p.date}</td>
-                                        <td>${p.amount}</td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </Table>
+                            <Table striped bordered hover size='sm'>
+                                <tbody>
+                                    {handleGetUpcomingPay()}
+                                </tbody>
+                            </Table>
                         <hr />
                         <div className='row'>
                             <div className='col'>
                                 Balance After Income
                             </div>
-                            <div className='col'>${state?.account?.balance - sumUp(state?.accountSummary?.bills?.map((b) => b.amount)) + sumUp(state?.accountSummary?.income?.map((p) => p.amount))}</div>
+                            <div className='col'>${handleGetBalanceAfterIncome()}</div>
+
+                            {/* <div className='col'>${state?.account?.balance - sumUp(state?.account?.bills?.map((b) => b.amount)) + sumUp(state?.account?.income?.map((p) => p.amount))}</div> */}
                         </div>
                         <hr />
                         <div className='graph-header-style'>Budgets</div>
@@ -230,7 +273,7 @@ export default function Home() {
                             </thead>
                             <tbody>
                                 {state?.accountSummary?.charges?.map((b) => (
-                                    <tr>
+                                    <tr key={b.name}>
                                         <td>{b.name}</td>
                                         <td>${b.amount}</td>
                                         <td>${b.remainingAmount}</td>
@@ -243,13 +286,17 @@ export default function Home() {
                             <div className='col'>
                                 Balance After Budgets
                             </div>
-                            <div className='col'>${state?.account?.balance - sumUp(state?.accountSummary?.bills?.map((b) => b.amount)) + sumUp(state?.accountSummary?.income?.map((p) => p.amount)) - sumUp(state?.accountSummary?.charges?.map((b) => {
+                            <div className='col'>
+                                ${handleGetFinalBalance()}
+                            </div>
+                            {/* <div className='col'>${state?.account?.balance - sumUp(state?.accountSummary?.bills?.map((b) => b.amount)) + sumUp(state?.accountSummary?.income?.map((p) => p.amount)) - sumUp(state?.accountSummary?.charges?.map((b) => {
                                 if(b.remainingAmount > 0) {
                                     return b.remainingAmount
                                 } else {
                                     return 0
                                 }
-                                }))}</div>
+                                }))}
+                            </div> */}
                         </div>
                         <hr />
                     </div>
