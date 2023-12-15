@@ -5,15 +5,12 @@ const { signToken } = require('../utils/auth');
 const { nextPayDate, getDatesArray, getBudgetRemainder } = require('../utils/helpers');
 const { Configuration, PlaidApi, PlaidEnvironments } = require('plaid');
 
-const CLIENT_ID = '65694be5a2e52c001b35a452';
-const SECRET = '52daec5f9be2222b310b27d17a48d9';
-
 const configuration = new Configuration({
   basePath: PlaidEnvironments.sandbox,
   baseOptions: {
     headers: {
-      'PLAID-CLIENT-ID': CLIENT_ID,
-      'PLAID-SECRET': SECRET,
+      'PLAID-CLIENT-ID': '1',
+      'PLAID-SECRET': '1',
     },
   },
 });
