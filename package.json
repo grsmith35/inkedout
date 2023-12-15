@@ -11,5 +11,8 @@
   "license": "ISC",
   "dependencies": {
     "concurrently": "^8.2.1"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "1.4.1"
   }
 }

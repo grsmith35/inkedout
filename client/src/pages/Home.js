@@ -74,7 +74,7 @@ export default function Home() {
         const datesComing = getDateArrayWithAmount(daysView);
         const upcomingBills = state?.account?.bills?.filter((bill) => datesComing.includes(parseInt(bill.date)));
         const upcomingPays =  nextPayDate(state?.account?.pays, datesComing);
-        return state?.account?.balance - upcomingBills.reduce((acc, cur) => acc + cur.amount,0) + upcomingPays.reduce((acc, cur) => acc + cur.amount, 0) - state?.accountSummary?.charges.reduce((acc, cur) => acc + cur.remainingAmount, 0)
+        return state?.account?.balance - upcomingBills?.reduce((acc, cur) => acc + cur?.amount,0) + upcomingPays?.reduce((acc, cur) => acc + cur?.amount, 0) - state?.accountSummary?.charges?.reduce((acc, cur) => acc + cur?.remainingAmount, 0)
     };
 
     const handleGetUpcomingPay = () => {
@@ -117,19 +117,6 @@ export default function Home() {
     const handleCloseModal = () => {
         setEditPayModal(() => false)
     };
-
-    // const handleTimeChange = async (e) => {
-    //     const date = parseInt(moment().day(Date()).format('d'));
-    //     const today = moment().format('MM/DD/YYYY');
-    //     const startSearchDate = moment(today).subtract(date, 'days').format('M/D/YYYY');
-    //     const results = await getAccountSum({
-    //         variables: {
-    //             _id: state?.account?._id,
-    //             days: parseInt(e.target.value),
-    //             startDate: startSearchDate
-    //         }
-    //     });
-    // }
 
     const getCharges = async () => {
         const date = parseInt(moment().day(Date()).format('d'));
@@ -241,7 +228,6 @@ export default function Home() {
                             <div className='col'>
                                 Balance After Bills
                             </div>
-                            {/* <div className='col'>${state?.account?.balance - sumUp(state?.account?.bills?.map((b) => b.amount))}</div> */}
                             <div className='col'>${handleGetTotalAfterBills()}</div>
 
                         </div>
@@ -259,7 +245,6 @@ export default function Home() {
                             </div>
                             <div className='col'>${handleGetBalanceAfterIncome()}</div>
 
-                            {/* <div className='col'>${state?.account?.balance - sumUp(state?.account?.bills?.map((b) => b.amount)) + sumUp(state?.account?.income?.map((p) => p.amount))}</div> */}
                         </div>
                         <hr />
                         <div className='graph-header-style'>Budgets</div>
@@ -289,14 +274,6 @@ export default function Home() {
                             <div className='col'>
                                 ${handleGetFinalBalance()}
                             </div>
-                            {/* <div className='col'>${state?.account?.balance - sumUp(state?.accountSummary?.bills?.map((b) => b.amount)) + sumUp(state?.accountSummary?.income?.map((p) => p.amount)) - sumUp(state?.accountSummary?.charges?.map((b) => {
-                                if(b.remainingAmount > 0) {
-                                    return b.remainingAmount
-                                } else {
-                                    return 0
-                                }
-                                }))}
-                            </div> */}
                         </div>
                         <hr />
                     </div>

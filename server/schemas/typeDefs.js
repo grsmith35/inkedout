@@ -54,6 +54,7 @@ const typeDefs = gql`
         getAccounts: [Account]
         getAccount(_id: ID!): Account
         getBalance: Account
+        getBankBalance: Account
         getBudget(_id: ID!): Budget
         getAllCharges: [Charge]
         getCharges(accountId: ID! startDate: Date, endDate: Date, budgetId: ID): [Charge]

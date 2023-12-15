@@ -20,6 +20,7 @@
     "jsonwebtoken": "^9.0.2",
     "moment": "^2.29.4",
     "mongoose": "^7.6.1",
-    "nodemon": "^3.0.1"
+    "nodemon": "^3.0.1",
+    "plaid": "^18.1.0"
   }
 }

@@ -3,6 +3,22 @@ const { Account, Pay, Bill, Budget, Charge } = require('../models');
 const moment = require('moment');
 const { signToken } = require('../utils/auth');
 const { nextPayDate, getDatesArray, getBudgetRemainder } = require('../utils/helpers');
+const { Configuration, PlaidApi, PlaidEnvironments } = require('plaid');
+
+const CLIENT_ID = '65694be5a2e52c001b35a452';
+const SECRET = '52daec5f9be2222b310b27d17a48d9';
+
+const configuration = new Configuration({
+  basePath: PlaidEnvironments.sandbox,
+  baseOptions: {
+    headers: {
+      'PLAID-CLIENT-ID': CLIENT_ID,
+      'PLAID-SECRET': SECRET,
+    },
+  },
+});
+
+const plaidClient = new PlaidApi(configuration)
 
 const resolvers = {
     Query: {
@@ -17,6 +33,27 @@ const resolvers = {
             .populate('pays')
             .populate('bills')
             .populate('budgets')
+        },
+        getBankBalance: async () => {
+            const request = {
+                user: {
+                  // This should correspond to a unique id for the current user.
+                  client_user_id: 'userid',
+                },
+                client_name: 'Plaid Test App',
+                products: ['auth'],
+                language: 'en',
+                redirect_uri: 'https://localhost:3001/',
+                country_codes: ['US'],
+              };
+              try {
+                const createTokenResponse = await plaidClient.linkTokenCreate(request);
+                response.json(createTokenResponse.data);
+                console.log(response.json(createTokenResponse.data))
+              } catch (error) {
+                // handle error
+                console.log(error)
+              }
         },
         getAccountSummary: async (parent, { _id, days, startDate }) => {
             const accountbudgets = [];
