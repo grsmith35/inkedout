@@ -4,7 +4,6 @@ import Header from './Components/Header';
 import PayView from './pages/PayView';
 import BillView from './pages/BillView';
 import BudgetsView from './pages/BudgetsView';
-import AddCharge from './pages/AddCharge';
 import Home from './pages/Home';
 import auth from './utils/auth';
 import { ApolloClient,
@@ -12,15 +11,10 @@ import { ApolloClient,
   ApolloProvider,
   createHttpLink, } from '@apollo/client';
   import { setContext } from '@apollo/client/link/context';
-  import { Routes, Route, Outlet, Link } from 'react-router-dom';
+  import { Routes, Route, Outlet } from 'react-router-dom';
 import { StoreProvider } from './utils/GlobalState';
-import Nav from 'react-bootstrap/Nav';
-import Dropdown from 'react-bootstrap/Dropdown';
-import NavItem from 'react-bootstrap/NavItem';
-import NavLink from 'react-bootstrap/NavLink';
 import AddIcon from './Components/AddIcon';
 import ChargeView from './pages/ChargeView';
-import BudgetGet from './Components/BudgetGet';
 import AddUser from './pages/AddUser';
 
 
@@ -54,7 +48,6 @@ function App() {
                 <Route path='/' element={<Layout />}>
                   <Route index element={<Home />} />
                   <Route path="Login" element={<Login />} />
-                  <Route path="AddCharge" element={<AddCharge />} />
                   <Route path="Bill" element={<BillView />} />
                   <Route path="Pay" element={<PayView />} />
                   <Route path="Budget" element={<BudgetsView />} />

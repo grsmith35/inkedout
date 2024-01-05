@@ -3,19 +3,6 @@ const { Account, Pay, Bill, Budget, Charge } = require('../models');
 const moment = require('moment');
 const { signToken } = require('../utils/auth');
 const { nextPayDate, getDatesArray, getBudgetRemainder } = require('../utils/helpers');
-const { Configuration, PlaidApi, PlaidEnvironments } = require('plaid');
-
-const configuration = new Configuration({
-  basePath: PlaidEnvironments.sandbox,
-  baseOptions: {
-    headers: {
-      'PLAID-CLIENT-ID': '1',
-      'PLAID-SECRET': '1',
-    },
-  },
-});
-
-const plaidClient = new PlaidApi(configuration)
 
 const resolvers = {
     Query: {
@@ -31,27 +18,6 @@ const resolvers = {
             .populate('bills')
             .populate('budgets')
         },
-        getBankBalance: async () => {
-            const request = {
-                user: {
-                  // This should correspond to a unique id for the current user.
-                  client_user_id: 'userid',
-                },
-                client_name: 'Plaid Test App',
-                products: ['auth'],
-                language: 'en',
-                redirect_uri: 'https://localhost:3001/',
-                country_codes: ['US'],
-              };
-              try {
-                const createTokenResponse = await plaidClient.linkTokenCreate(request);
-                response.json(createTokenResponse.data);
-                console.log(response.json(createTokenResponse.data))
-              } catch (error) {
-                // handle error
-                console.log(error)
-              }
-        },
         getAccountSummary: async (parent, { _id, days, startDate }) => {
             const accountbudgets = [];
             const startDateUse = `${moment().format('MM')}/${startDate}/${moment().format('YYYY')}`
@@ -59,8 +25,6 @@ const resolvers = {
             .populate('pays')
             .populate('bills')
             .populate('budgets')
-            console.log(days, startDate)
-            // const charges = await Charge.find({ accountId: _id });
             account.bills = account.bills.filter((b) => getDatesArray(startDate, days).includes(parseInt(b.date)));
             account.pays = account.pays.filter((p) => nextPayDate())
             account.pays = nextPayDate(account?.pays, getDatesArray(startDate, days));
@@ -69,18 +33,9 @@ const resolvers = {
                     accountId: _id, 
                     budgetId: account?.budgets[i]?._id.toString() 
                 })
-                // if(!!budgetCharges?.length > 0) {
-                //     budgetCharges.filter((c) => {
-                //         moment(c.date).isAfter(startDateUse) && moment(c.date).isBefore(moment(startDateUse).add(days, 'days'))
-                //     })
-                // }
-                // console.log(budgetCharges.filter((c) => moment(c.date).isAfter(startDateUse) && moment(c.date).isBefore(moment(startDateUse).add(days, 'days'))))
                 accountbudgets.push(getBudgetRemainder(budgetCharges.filter((c) => moment(c.date).isAfter(startDateUse) && moment(c.date).isBefore(moment(startDateUse).add(days, 'days'))), account?.budgets[i], days))
             }
             account.budgets = accountbudgets
-            // console.log(startDateUse)
-            // const budgets = await organizeCharges(charges, account.budgets)
-            // console.log(account)
             return account;
         },
         getBudget: async (parent, { _id }) => {
@@ -102,11 +57,6 @@ const resolvers = {
             const charges =  await Charge.find()
             return charges;
         },
-        getBalance: async () => {
-            const bankInfo = await fetch('https://www.boredapi.com/api/activity')
-            const result = await bankInfo.json();
-            console.log(result)
-        }
     },
     Mutation: {
         login: async (parent, { email, password }) => {

@@ -5,7 +5,7 @@ import { useStoreContext } from "../utils/GlobalState";
 import auth from '../utils/auth';
 import Form from 'react-bootstrap/Form';
 import Button from 'react-bootstrap/Button'
-import { UPDATE_ACCOUNT_ID, UPDATE_ACCOUNT } from '../utils/actions';
+import { UPDATE_ACCOUNT } from '../utils/actions';
 
 export default function Login() {
     const [state, dispatch] = useStoreContext();
@@ -49,14 +49,6 @@ export default function Login() {
     return (
         <div className='container align-items-center large-margin'>
             <div className='row mx-auto'>
-                {/* <form className='my-auto' onSubmit={handleLogin} onChange={handleFormChange}>
-                    <label htmlFor='email' className='row'>Email</label>
-                    <input id='email' name='email' type='text' className='row' value={formState.email}></input>
-                    <label htmlFor='password' className='row'>Password</label>
-                    <input id='password' name='password' type='password' className='row' value={formState.password}></input>
-                    <button className='btn btn-primary'>Login</button>
-                    {error && <div>Login Failed</div>}
-                </form> */}
                 <Form onChange={handleFormChange} onSubmit={handleLogin}>
                     <Form.Group className="mb-3" controlId='email'>
                         <Form.Label>Email</Form.Label>
@@ -68,7 +60,6 @@ export default function Login() {
                     </Form.Group>
                     <Button variant='primary' className='green-color full-width-button' type='submit'>Login</Button>
                     {error && <div className='login-error'>Login Failed</div>}
-
                 </Form>
             </div>
         </div>

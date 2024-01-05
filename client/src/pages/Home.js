@@ -1,6 +1,6 @@
 import React from 'react';
 import { useLazyQuery, useQuery, useMutation } from '@apollo/client';
-import { QUERY_ACCOUNT, QUERY_CHARGE_RANGE, QUERY_ACCOUNT_SUMMARY } from '../utils/queries';
+import { QUERY_ACCOUNT, QUERY_CHARGE_RANGE } from '../utils/queries';
 import { useStoreContext } from "../utils/GlobalState";
 import { EDIT_ACCOUNT_BALANCE } from '../utils/mutations';
 import Spinner from 'react-bootstrap/Spinner';
@@ -15,9 +15,7 @@ import Login from "./Login";
 
 export default function Home() {
     const [editBalance] = useMutation(EDIT_ACCOUNT_BALANCE);
-    const [getAccountSum, { called }] = useLazyQuery(QUERY_ACCOUNT_SUMMARY);
     const [daysView, setDaysView] = React.useState(7);
-    const [remaningBudgets, setRemainingBudgets] = React.useState();
     const [editPayModal, setEditPayModal] = React.useState(false);
     const [state, dispatch] = useStoreContext();
     const [balanceForm, setBalanceForm] = React.useState([
@@ -157,7 +155,6 @@ export default function Home() {
 
     React.useEffect(() => {
         if(state?.charges) {
-            setRemainingBudgets(() => organizeCharges(state.charges, state.account.budgets));
             dispatch({
                 type: UPDATE_ACCOUNT_SUMMARY_CHARGES,
                 charges: organizeCharges(state.charges, state.account.budgets)

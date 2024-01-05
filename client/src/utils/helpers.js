@@ -22,18 +22,18 @@ export function formFieldCreator(field) {
             )
         case 'number':
             return (
-                <>
+                <Form.Group key={`${field.title}-key`}>
                 <Form.Label>{field.title}</Form.Label>
                 <InputGroup className="mb-3">
                     <InputGroup.Text>$</InputGroup.Text>
                     <Form.Control name={field.name} aria-label="Amount" defaultValue={field?.value > 0 ? field.value : 0}/>
                     {/* <InputGroup.Text>.00</InputGroup.Text> */}
                 </InputGroup>
-                </>
+                </Form.Group>
             )
         case 'checkbox':
             return (
-                <>
+                <Form.Group key={`${field.title}-key`}>
                     <Form.Check // prettier-ignore
                         name={field.name}
                         type={type}
@@ -41,7 +41,7 @@ export function formFieldCreator(field) {
                         label={`${field.title}`}
                         defaultChecked={field.value}
                     />
-                </>
+                </Form.Group>
             )
         case 'dropdown':
             const list = [];
@@ -58,21 +58,16 @@ export function formFieldCreator(field) {
                 })
             }
             return (
-                <>
+                <Form.Group key={`${field.title}-key`}>
                     <Form.Label>{field.title}</Form.Label>
                     <Form.Select className='mb-3' aria-label={field.name} name={field.name} defaultValue={field?.value?.length > 0 ?? field.value }>
-                        {/* <option>Please Select an Option</option> */}
-                        {/* <option value="Weekly">Weekly</option>
-                        <option value="Bi-weekly">Bi-weekly</option>
-                        <option value="Bi-monthly">Bi-monthly</option>
-                        <option value="Monthly">Monthly</option> */}
                         {list?.map((i) => <option value={i.value}>{i.name}</option>)}
                     </Form.Select>
-                </>
+                </Form.Group>
             )
         case 'date':
             return (
-                <div className='date-div'>  
+                <div className='date-div' key={`${field.title}-key`}>  
                     <label htmlFor='date' className='row form-label'>{field.title}</label>
                     <input id='date' type='date' name={field.name} className='row form-control' defaultValue={field?.value}></input>
                 </div>

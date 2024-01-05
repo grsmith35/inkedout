@@ -25,8 +25,40 @@ code {
   margin-top: 50px;
 }
 
-.faded-green-color {
-  background-color: rgba(4,93,37,.5);
+.accordion-button {
+  background-color: rgba(4,93,37,1) !important;
+  color: white;
+}
+
+.accordion-button:focus {
+  box-shadow: none;
+  color: white;
+}
+
+.accordion-button:not(.collapsed) {
+  background-color: rgba(4,93,37,.6) !important;
+
+  color: white;
+}
+
+.dropdown-toggle::after {
+  display: none !important; 
+}
+
+.btn-custom {
+  background-color: rgba(4,93,37,1) !important;
+  color: white;
+}
+
+.btn-custom:disabled {
+  background-color: rgba(4,93,37,.5) !important;
+  color: white;
+  border: none;
+}
+
+.btn-custom:focus {
+  background-color: rgba(4,93,37,1) !important;
+  color: white;
 }
 
 .green-color:disabled {
@@ -85,6 +117,10 @@ code {
 
 .x-box {
   background-color: red;
+}
+
+.accordion-box {
+  background-color: rgba(4,93,37,.5);
 }
 
 .check-box {
