@@ -36,10 +36,13 @@ export default function Header() {
                   <Dropdown.Menu className='drop-down'>
                     <Dropdown.Item id="Home"><Link to="/Home" className='nav-link'>Summary</Link></Dropdown.Item>
                     <Dropdown.Item id="Bill"><Link to="/Bill" className='nav-link'>Bills</Link></Dropdown.Item>
-                    <Dropdown.Item id="Income"><Link to="/Pay" className='nav-link'>Income</Link></Dropdown.Item>
                     <Dropdown.Item id="Budget"><Link to="/Budget" className='nav-link'>Budgets</Link></Dropdown.Item>
                     <Dropdown.Item id="Charges"><Link to="/Charges" className='nav-link'>Charges</Link></Dropdown.Item>
-                    <Dropdown.Item id="Charges"><Link to="/" onClick={handleLogout} className='nav-link'>Log Out</Link></Dropdown.Item>
+                    <Dropdown.Item id="Lists"><Link to="/Lists" className='nav-link'>Lists</Link></Dropdown.Item>
+                    <Dropdown.Item id="Income"><Link to="/Pay" className='nav-link'>Income</Link></Dropdown.Item>
+                    <Dropdown.Item id="Areas"><Link to="/Areas" className="nav-link">Areas</Link></Dropdown.Item>
+                    <Dropdown.Item id="GroceryOptions"><Link to="/GroceryOptions" className="nav-link">Grocery Options</Link></Dropdown.Item>
+                    <Dropdown.Item id="Logout"><Link to="/" onClick={handleLogout} className='nav-link'>Log Out</Link></Dropdown.Item>
                   </Dropdown.Menu>
                 </Dropdown>
             </Nav>

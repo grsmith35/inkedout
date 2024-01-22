@@ -1,5 +1,5 @@
 const { AuthenticationError } = require('apollo-server-express');
-const { Account, Pay, Bill, Budget, Charge } = require('../models');
+const { Account, Pay, Bill, Budget, Charge, Area, GroceryList, GroceryOption, List } = require('../models');
 const moment = require('moment');
 const { signToken } = require('../utils/auth');
 const { nextPayDate, getDatesArray, getBudgetRemainder } = require('../utils/helpers');
@@ -37,6 +37,31 @@ const resolvers = {
             }
             account.budgets = accountbudgets
             return account;
+        },
+        getAreas: async (parent, { accountId }) => {
+            return await Area.find({ accountId: accountId });
+        },
+        getArea: async (parent, { _id }) => {
+            return await Area.findOne({ _id: _id });
+        },
+        getOptions: async (parent, { accountId }) => {
+            return await GroceryOption.find({ accountId: accountId });
+        },
+        getGroceryLists: async (parent, { _id }) => {
+            return await GroceryList.find({ accountId: _id });
+        },
+        getItemsByList: async (parent, { listId }) => {
+            return await GroceryList.find({ listId: listId })
+            .populate('items');
+        },
+        getGroceryList: async (parent, { _id }) => {
+            return await GroceryList.findOne({ _id: _id });
+        },
+        getLists: async (parent, { accountId }) => {
+            return await List.find({ accountId: accountId });
+        },
+        getList: async (parent, { _id }) => {
+            return await List.findOne({ _id: _id });
         },
         getBudget: async (parent, { _id }) => {
             return await Budget.findOne({ _id: _id })
@@ -93,6 +118,58 @@ const resolvers = {
         },
         deleteAccount: async (parent, { _id }) => {
             return await Account.findOneAndDelete({ _id: _id })
+        },
+        addArea: async (parent, args) => {
+            return await Area.create(args);
+        },
+        editArea: async (parent, args) => {
+            return await Area.findOneAndUpdate(
+                { _id: args._id },
+                { $set: { name: args.name, accountId: args.accountId }},
+                { new: true }
+            );
+        },
+        deleteArea: async (parent, { _id }) => {
+            return await Area.findOneAndDelete({ _id : _id });
+        },
+        addOption: async (parent, args) => {
+            return await GroceryOption.create(args);
+        },
+        editOption: async (parent, args) => {
+            return await GroceryOption.findOneAndUpdate(
+                { _id: args._id },
+                { $set: { name: args.name, areaId: args.areaId }},
+                { new: true },
+            );
+        },
+        deleteOption: async (parent, { _id }) => {
+            return await GroceryOption.findOneAndDelete({ _id : _id });
+        },
+        addGroceryItem: async (parent, args) => {
+            return await GroceryList.create(args);
+        },
+        editGroceryItem: async (parent, args) => {
+            return await GroceryList.findOneAndUpdate(
+                { _id: args._id },
+                { $set: { name: args.name, areaId: args.areaId, listId: args.listId, amount: args.amount }},
+                { new: true }
+            );
+        },
+        deleteGroceryItem: async (parent, { _id }) => {
+            return await GroceryList.findOneAndDelete({ _id: _id });
+        },
+        addList: async (parent, args) => {
+            return await List.create(args);
+        },
+        editList: async (parent, args) => {
+            return await List.findOneAndUpdate(
+                { _id: args._id },
+                { $set: { name: args.name, accoundId: args.accountId }},
+                { new: true }
+            );
+        },
+        deleteList: async (parent, { _id }) => {
+            return await List.findOneAndDelete({ _id: _id });
         },
         addPay: async (parent, args) => {
             const pay = await Pay.create({

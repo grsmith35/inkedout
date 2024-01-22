@@ -15,6 +15,35 @@ const typeDefs = gql`
         budgets: [Budget]
     }
 
+    type Area {
+        _id: ID
+        name: String!
+        accountId: ID!
+    }
+
+    type Option {
+        _id: ID
+        name: String!
+        areaId: ID!
+        accountId: ID!
+    }
+
+    type GroceryList {
+        _id: ID
+        name: String!
+        areaId: ID!
+        listId: ID!
+        amount: Float
+    }
+
+    type List {
+        _id: ID
+        name: String!
+        accountId: ID!
+        items: [Option]
+        itemCount: Int
+    }
+
     type Pay {
         _id: ID
         name: String!
@@ -52,6 +81,14 @@ const typeDefs = gql`
 
     type Query {
         getAccounts: [Account]
+        getAreas(accountId: ID!): [Area]
+        getArea(_id: ID!): Area
+        getOptions(accountId: ID!): [Option]
+        getGroceryLists(accountId: ID!): [GroceryList]
+        getGroceryList(_id: ID!): GroceryList
+        getLists(accountId: ID!): [List]
+        getList(listId: ID!): List
+        getItemsByList(listId: ID!): [GroceryList]
         getAccount(_id: ID!): Account
         getBudget(_id: ID!): Budget
         getAllCharges: [Charge]
@@ -70,6 +107,20 @@ const typeDefs = gql`
         editAccount(_id: ID!, name: String, email: String): Account
         editAccountBalance(_id: ID!, balance: Float!): Account
         deleteAccount(_id: ID!): Account
+        addArea(name: String!, accountId: ID!): Area
+        editArea(_id: ID!, name: String!): Area
+        deleteArea(_id: ID!): Area
+        addOption(name: String!, areaId: ID, accountId: ID!): Option
+        editOption(_id: ID!, name: String, areaId: ID): Option
+        deleteOption(_id: ID!): Option
+        addGroceryItem(name: String!, areaId: ID, listId: ID!, amount: Float): GroceryList
+        editGroceryItem(_id: ID!, name: String, areaId: ID, listId: ID, amount: Float): GroceryList
+        deleteGroceryItem(_id: ID!): GroceryList
+        addList(name: String!, accountId: ID!): List
+        editList(_id: ID!, name: String, accountId: ID): List
+        deleteList(_id: ID!): List
+        addItemToList(listId: ID!, optionId: ID!): List
+        removeItemFromList(listId: ID!, optionId: ID!): List
         addPay(_id: ID!, name: String!, payDate: String, payWeek: String, consistency: String!, source: String!, amount: Float!): Pay
         editPay(_id: ID!, name: String, source: String, payDate: String, payWeek: String consistency: String, amount: Float ): Pay
         deletePay(_id: ID!, accountId: ID!): Pay

@@ -194,4 +194,120 @@ export const ADD_USER = gql`
             email
         }
     }
-`
+`;
+
+export const ADD_AREA = gql`
+    mutation addArea($name: String!, $accountId: ID!) {
+        addArea(name: $name, accountId: $accountId) {
+            _id
+            accountId
+            name
+        }
+    }
+`;
+
+export const EDIT_AREA = gql`
+    mutation editArea($_id: ID!, $name: String!) {
+        editArea(_id: $_id, name: $name) {
+            _id
+            accountId
+            name
+        }
+    }
+`;
+
+export const DELETE_AREA = gql`
+    mutation deleteArea($_id: ID!) {
+        deleteArea(_id: $_id) {
+            _id
+        }
+    }
+`;
+
+export const ADD_OPTION = gql`
+    mutation addOption($name: String!, $areaId: ID!, $accountId: ID!) {
+        addOption(name: $name, areaId: $areaId, accountId: $accountId) {
+            _id
+            name
+            areaId
+            accountId
+        }
+    }
+`;
+
+export const EDIT_OPTION = gql`
+    mutation editOption($_id: ID!, $name: String, $areaId: ID) {
+        editOption(_id: $_id, name: $name, areaId: $areaId) {
+            _id
+            name
+            areaId
+            accountId
+        }
+    }
+`;
+
+export const DELETE_OPTION = gql`
+    mutation deleteOption($_id: ID!) {
+        deleteOption(_id: $_id) {
+            _id
+        }
+    }
+`;
+
+export const ADD_GROCERY_ITEM = gql`
+    mutation addGroceryItem($name: String!, $areaId: ID!, $listId: ID!, $amount: Float) {
+        addGroceryItem(name: $name, areaId: $areaId, listId: $listId, amount: $amount) {
+            _id
+            name
+            areaId
+            listId
+            amount
+        }
+    }
+`;
+
+export const EDIT_GROCERY_ITEM = gql`
+    mutation editGroceryItem($_id: ID!, $name: String, $areaId: ID, $listId: ID, $amount: Float) {
+        editGroceryItem(_id: $_id, name: $name, areaId: $areaId, listId: $listId, amount: $amount) {
+            _id
+            name
+            amount
+        }
+    }
+`;
+
+export const DELETE_GROCERY_ITEM = gql`
+    mutation deleteGroceryItem($_id: ID!) {
+        deleteGroceryItem(_id: $_id) {
+            _id
+        }
+    }
+`;
+
+export const ADD_LIST = gql`
+    mutation addList($name: String!, $accountId: ID!) {
+        addList(name: $name, accountId: $accountId) {
+            _id
+            name
+            accountId
+        }
+    }
+`;
+
+export const EDIT_LIST = gql`
+    mutation editList($_id: ID!, $name: String, $accountId: ID) {
+        editList(_id: $_id, name: $name, accountId: $accountId) {
+            _id
+            name
+            accountId
+        }
+    }
+`;
+
+export const DELETE_LIST = gql`
+    mutation deleteList($_id: ID!) {
+        deleteList(_id: $_id) {
+            _id
+        }
+    }
+`;

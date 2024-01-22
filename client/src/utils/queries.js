@@ -89,3 +89,60 @@ export const QUERY_ACCOUNT_SUMMARY = gql`
         }
     }
 `;
+
+export const QUERY_AREAS = gql`
+    query getAreas($accountId: ID!) {
+        getAreas(accountId: $accountId) {
+            _id
+            accountId
+            name
+        }
+    }
+`;
+
+export const QUERY_OPTIONS = gql`
+    query getOptions($accountId: ID!) {
+        getOptions(accountId: $accountId) {
+            _id
+            name
+            areaId
+        }
+    }
+`;
+
+export const QUERY_ACCOUNT_LISTS = gql`
+    query getLists($accountId: ID!) {
+        getLists(accountId: $accountId) {
+            _id
+            name
+            accountId
+            itemCount
+        }
+    }
+`;
+
+export const QUERY_LIST_ITEMS = gql`
+    query getList($listId: ID!) {
+        getList(listId: $listId) {
+            _id
+            name
+            items {
+                name
+                _id
+                areaId
+            }
+            itemCount
+        }
+    }
+`;
+
+export const QUERY_ITEMS_BY_LIST = gql`
+    query getItemsByList($listId: ID!) {
+        getItemsByList(listId: $listId) {
+            _id
+            name
+            amount
+            areaId
+        }
+    }
+`;

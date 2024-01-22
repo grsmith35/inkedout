@@ -5,6 +5,7 @@ import PayView from './pages/PayView';
 import BillView from './pages/BillView';
 import BudgetsView from './pages/BudgetsView';
 import Home from './pages/Home';
+import ListsView from './pages/AccountLists';
 import auth from './utils/auth';
 import { ApolloClient,
   InMemoryCache,
@@ -16,7 +17,9 @@ import { StoreProvider } from './utils/GlobalState';
 import AddIcon from './Components/AddIcon';
 import ChargeView from './pages/ChargeView';
 import AddUser from './pages/AddUser';
-
+import GroceryItemsView from './pages/GroceryItemsView';
+import AreaView from './pages/AreaView';
+import GroceryOptionView from './pages/GroceryOptionsView';
 
 const httpLink = createHttpLink({
   uri: process.env.REACT_APP_SERVER_URL || "http://localhost:3001/graphql",
@@ -53,6 +56,10 @@ function App() {
                   <Route path="Budget" element={<BudgetsView />} />
                   <Route path="Charges" element={<ChargeView />} />
                   <Route path="User" element={<AddUser />} />
+                  <Route path="Lists" element={<ListsView />} />
+                  <Route path="Areas" element={<AreaView />} />
+                  <Route path="GroceryOptions" element={<GroceryOptionView />} />
+                  <Route path="GroceryItems/:listId" element={<GroceryItemsView />} />
                   <Route path="*" element={<Home />} />
                 </Route>      
               </Routes>

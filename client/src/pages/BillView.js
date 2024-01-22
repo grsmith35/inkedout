@@ -237,7 +237,7 @@ export default function BillView() {
                     />
                 )}
                 <h3>Bills</h3>
-                {state?.account?.bills?.lenght === 0 && (
+                {state?.account?.bills?.length === 0 && (
                     <div>Add Your First Bill</div>
                 )}
                 <div>

@@ -15,7 +15,6 @@ export default function BudgetGet() {
             }
         });
         if(!!fullAccount) {
-            console.log('budget get happenings')
             dispatch({
                 type: UPDATE_ACCOUNT,
                 account: fullAccount.data.getAccountInfo
