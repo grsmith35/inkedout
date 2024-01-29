@@ -18,6 +18,10 @@ const groceryListSchema = new Schema(
             type: Number,
             require: false
         },
+        optionId: {
+            type: Schema.Types.ObjectId,
+            require: true
+        }
     },
     {
         toJSON: {

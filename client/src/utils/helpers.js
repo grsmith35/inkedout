@@ -46,7 +46,12 @@ export function formFieldCreator(field) {
         case 'dropdown':
             const list = [];
             if(field?.value?.length > 0) {
-                list.push(field.items.find((i) => i.value === field.value));
+                if(field.items.map((i) => i.value).includes(field.value)) {
+                    console.log('includes');
+                    list.push(field.items.find((i) => i.value === field.value));
+                } else {
+                    list.push({value: null, name: 'Please Select an Option'});
+                }
                 const itemsRest = field.items.filter((e) => e.value !== field.value)
                 itemsRest.map((i) => {
                     list.push(i)
@@ -96,7 +101,22 @@ export function getDateArrayWithAmount(days) {
         }
     }
     return datesComing;
-}
+};
+
+export const replaceItemInArray = (current, toReplace, item) => {
+    const currentItemIndex = current.indexOf(toReplace);
+    const cleanedArray = current.filter((c) => c._id !== toReplace._id);
+    return cleanedArray.toSpliced(currentItemIndex, 0, item);
+};
+
+export const filterListFromOptions = (options, listItems) => {
+    const listItemIDs = listItems?.map((li) => li.optionId);
+    return options?.filter((o) => !listItemIDs.includes(o._id))
+};
+
+export const formatCurrency = (amount) => {
+    return `$${(Math.round(amount * 100) / 100).toFixed(2)}`
+};
 
 export function getDateArray() {
     const datesComing = [];

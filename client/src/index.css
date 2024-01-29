@@ -144,6 +144,16 @@ code {
   margin-bottom: 12px;
 }
 
+.pull-over-button {
+  position: fixed;
+  bottom: 21rem;
+  right: 0rem;
+  border-top-right-radius: 0%;
+  border-bottom-right-radius: 0%;
+  height: 6rem;
+  width: 1rem;
+}
+
 .fixedbutton {
   position: fixed;
   bottom: 0px;

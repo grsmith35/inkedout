@@ -47,12 +47,18 @@ const resolvers = {
         getOptions: async (parent, { accountId }) => {
             return await GroceryOption.find({ accountId: accountId });
         },
+        getOptionsByName: async (parent, { accountId, name }) => {
+            const accountOptions = await GroceryOption.find({ accountId: accountId })
+            // return await context.db.Option.find((o) => o.name.includes(name))
+            if(!!name.length) {
+                return accountOptions.filter((o) => o.name.toLowerCase().includes(name.toLowerCase()));
+            } else return accountOptions;
+        },
         getGroceryLists: async (parent, { _id }) => {
             return await GroceryList.find({ accountId: _id });
         },
         getItemsByList: async (parent, { listId }) => {
             return await GroceryList.find({ listId: listId })
-            .populate('items');
         },
         getGroceryList: async (parent, { _id }) => {
             return await GroceryList.findOne({ _id: _id });
@@ -146,7 +152,13 @@ const resolvers = {
             return await GroceryOption.findOneAndDelete({ _id : _id });
         },
         addGroceryItem: async (parent, args) => {
-            return await GroceryList.create(args);
+            const newItem = await GroceryList.create(args);
+            const changedList = await List.findOneAndUpdate(
+                { _id: args.listId },
+                { $push: { items: newItem._id }},
+                { new: true }
+            );
+            return newItem
         },
         editGroceryItem: async (parent, args) => {
             return await GroceryList.findOneAndUpdate(
@@ -154,6 +166,7 @@ const resolvers = {
                 { $set: { name: args.name, areaId: args.areaId, listId: args.listId, amount: args.amount }},
                 { new: true }
             );
+            // return await GroceryList.find({ listId: args.listId });
         },
         deleteGroceryItem: async (parent, { _id }) => {
             return await GroceryList.findOneAndDelete({ _id: _id });

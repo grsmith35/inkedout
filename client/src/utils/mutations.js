@@ -255,13 +255,14 @@ export const DELETE_OPTION = gql`
 `;
 
 export const ADD_GROCERY_ITEM = gql`
-    mutation addGroceryItem($name: String!, $areaId: ID!, $listId: ID!, $amount: Float) {
-        addGroceryItem(name: $name, areaId: $areaId, listId: $listId, amount: $amount) {
+    mutation addGroceryItem($name: String!, $areaId: ID!, $listId: ID!, $optionId: ID!, $amount: Float) {
+        addGroceryItem(name: $name, areaId: $areaId, listId: $listId, optionId: $optionId, amount: $amount) {
             _id
             name
             areaId
             listId
             amount
+            optionId
         }
     }
 `;
@@ -272,6 +273,9 @@ export const EDIT_GROCERY_ITEM = gql`
             _id
             name
             amount
+            areaId
+            listId
+            optionId
         }
     }
 `;

@@ -33,6 +33,7 @@ const typeDefs = gql`
         name: String!
         areaId: ID!
         listId: ID!
+        optionId: ID!
         amount: Float
     }
 
@@ -90,6 +91,7 @@ const typeDefs = gql`
         getList(listId: ID!): List
         getItemsByList(listId: ID!): [GroceryList]
         getAccount(_id: ID!): Account
+        getOptionsByName(accountId: ID!, name: String!): [Option]
         getBudget(_id: ID!): Budget
         getAllCharges: [Charge]
         getCharges(accountId: ID! startDate: Date, endDate: Date, budgetId: ID): [Charge]
@@ -113,7 +115,7 @@ const typeDefs = gql`
         addOption(name: String!, areaId: ID, accountId: ID!): Option
         editOption(_id: ID!, name: String, areaId: ID): Option
         deleteOption(_id: ID!): Option
-        addGroceryItem(name: String!, areaId: ID, listId: ID!, amount: Float): GroceryList
+        addGroceryItem(name: String!, areaId: ID, listId: ID!, amount: Float, optionId: ID!): GroceryList
         editGroceryItem(_id: ID!, name: String, areaId: ID, listId: ID, amount: Float): GroceryList
         deleteGroceryItem(_id: ID!): GroceryList
         addList(name: String!, accountId: ID!): List

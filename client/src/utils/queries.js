@@ -117,6 +117,9 @@ export const QUERY_ACCOUNT_LISTS = gql`
             name
             accountId
             itemCount
+            items {
+                _id
+            }
         }
     }
 `;
@@ -142,6 +145,17 @@ export const QUERY_ITEMS_BY_LIST = gql`
             _id
             name
             amount
+            areaId
+            optionId
+        }
+    }
+`;
+
+export const QUERY_OPTIONS_BY_NAME = gql`
+    query getOptionsByName($accountId: ID!, $name: String!) {
+        getOptionsByName(accountId: $accountId, name: $name) {
+            _id
+            name
             areaId
         }
     }

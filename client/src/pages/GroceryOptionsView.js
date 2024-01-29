@@ -42,15 +42,15 @@ export default function GroceryOptionView() {
                 type: "text",
                 name: "name",
                 value: optionToEdit.name,
-                defaultValue: optionToEdit.name
+                // defaultValue: optionToEdit.name
             },
             {
                 title: "Area",
                 type: "dropdown",
                 items: state?.areas?.map((a) => { return {value: a._id, name: a.name }}),
                 name: "area",
-                value: optionToEdit.areaId,
-                defaultValue: optionToEdit?.areaId
+                value: !!optionToEdit?.areaId ? optionToEdit.areaId : "",
+                // defaultValue: optionToEdit?.areaId
             },
         ])
         setEditOption(true);
@@ -237,6 +237,7 @@ export default function GroceryOptionView() {
                                         </Dropdown>
                                     </div>
                                 </div>
+                                <div className="d-flex ps-3 justify-content-start">{state?.areas?.find((a) => a._id === ao.areaId)?.name}</div>
                             </div>
                         )))}
             </>
