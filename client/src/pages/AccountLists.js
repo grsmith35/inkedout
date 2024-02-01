@@ -8,6 +8,7 @@ import { ADD_LIST, DELETE_LIST, EDIT_LIST } from "../utils/mutations";
 import { UPDATE_ACCOUNT_AREAS, UPDATE_ACCOUNT_LISTS } from "../utils/actions";
 import auth from "../utils/auth";
 import Login from "./Login";
+import { replaceItemInArray } from '../utils/helpers';
 import { useNavigate } from "react-router-dom";
 import Dropdown from 'react-bootstrap/Dropdown';
 import NavItem from 'react-bootstrap/NavItem';
@@ -35,80 +36,44 @@ export default function ListsView() {
     )
     
     const handleEditList = (e) => {
-        // const billToEdit = state?.account?.bills?.filter((bill) => bill._id === e.target.id)
+        const listToEdit = state?.accountLists?.filter((list) => list._id === e.target.id)
         // setEditBillId(() => billToEdit[0]._id)
-        // setBillsForm([
-        //     {
-        //         title: "List Name",
-        //         type: "text",
-        //         name: "name",
-        //         value: billToEdit[0].name,
-        //         defaultValue: billToEdit[0].name
-        //     },
-        //     {
-        //         title: "Day of month Due",
-        //         type: "text",
-        //         name: 'date',
-        //         value: billToEdit[0].date,
-        //         defaultValue: billToEdit[0].date
-        //     },
-        //     {
-        //         title: "Source",
-        //         type: "text",
-        //         name: 'source',
-        //         value: billToEdit[0].source,
-        //         defaultValue: billToEdit[0].source
-        //     },
-        //     {
-        //         title: "Amount",
-        //         type: "number",
-        //         name: "amount",
-        //         value: billToEdit[0].amount,
-        //         defaultValue: billToEdit[0].amount
-        //     },{
-        //         title: "Automated",
-        //         type: "checkbox",
-        //         name: "automated",
-        //         value: !!billToEdit[0].automated ? 'on' : false,
-        //         defaultValue: !!billToEdit[0].automated  ? 'on' : false
-        //     }
-        // ])
-        // setEditBill(true);
+        setListForm([
+            {
+                title: "List Name",
+                type: "text",
+                name: "name",
+                value: listToEdit[0].name,
+                defaultValue: listToEdit[0].name
+            },
+            // {
+            //     title: "Areas",
+            //     type: "dropdown",
+            //     items: (areaLoading ? [{ value: "No options", name: null }] : state.accountAreas),
+            //     name: 'area',
+            //     value: listToEdit[0].areaId
+            // }
+        ])
+        setEditList(true);
     }
 
     const handleOpenModal = () => {
-        // setBillsForm([
-        //     {
-        //         title: "Bill Name",
-        //         type: "text",
-        //         name: "name",
-        //         value: ""
-        //     },
-        //     {
-        //         title: "Day of month Due",
-        //         type: "text",
-        //         name: 'date',
-        //         value: ""
-        //     },
-        //     {
-        //         title: "Source",
-        //         type: "text",
-        //         name: 'source',
-        //         value: ""
-        //     },
-        //     {
-        //         title: "Amount",
-        //         type: "number",
-        //         name: "amount",
-        //         value: "0"
-        //     },{
-        //         title: "Automated",
-        //         type: "checkbox",
-        //         name: "automated",
-        //         value: false
-        //     }
-        // ])
-        // setAddBill(true)
+        setListForm([
+            {
+                title: "List Name",
+                type: "text",
+                name: "name",
+                value: ""
+            },
+            // {
+            //     title: "Areas",
+            //     type: "dropdown",
+            //     items: (areaLoading ? [{ value: "No options", name: null }] : state.accountAreas),
+            //     name: 'area',
+            //     value: ""
+            // }
+        ])
+        setAddList(true)
     };
 
     const [listForm, setListForm] = React.useState([
@@ -118,13 +83,6 @@ export default function ListsView() {
             name: "name",
             value: ""
         },
-        {
-            title: "Areas",
-            type: "dropdown",
-            items: (areaLoading ? [{ value: "No options", name: null }] : state.accountAreas),
-            name: 'area',
-            value: ""
-        }
     ]);
 
     const handleCloseModal = (e) => {
@@ -133,19 +91,21 @@ export default function ListsView() {
     };
 
     const handleViewList = (e) => {
-        console.log(e.target.id);
         if(!!e.target.id) {
             navigate(`/GroceryItems/${e.target.id}`);
         }
     }
 
     const handleDeleteList = async (e) => {
-        // const removedBill = await deleteBill({
-        //     variables: { _id: `${e.target.id}`, accountId: state?.account?._id}
-        // })
-        // if(!!removedBill) {
-        //     setBillRemoved(e.target.id)
-        // }
+        const data = await deleteList({
+            variables: { _id: `${e.target.id}` }
+        })
+        if(!!data) {
+            dispatch({
+                type: UPDATE_ACCOUNT_LISTS,
+                lists: state.accountLists.filter((al) => al._id !== e.target.id)
+            });
+        }
     };
 
     const handlePatchList = async () => {
@@ -153,55 +113,27 @@ export default function ListsView() {
             variables: { _id: editListId, name: listForm[0].value, date: listForm[1].value }
         });
         if(!!editedList) {
-            setListEdited(editedList.data.editList);
+            dispatch({
+                type: UPDATE_ACCOUNT_LISTS,
+                lists: replaceItemInArray(state.accountLists, state.accountLists.find((al) => al._id === editListId), editedList.data.editList)
+            });
             setEditList(false)
         }
     }
 
     const handleAddList = async () => {
-        // const data = await addNewBill({
-        //     variables: { _id: state?.account?._id, name: billsForm[0].value, date: billsForm[1].value, source: billsForm[2].value, amount: parseFloat(billsForm[3].value), automated: billsForm[4].value }
-        // })
-        // if(!!data) {
-        //     setBillAdded(data.data.addBill);
-        //     setAddBill(false);
-        // }
+        const data = await addNewList({
+            variables: { accountId: localStorage.getItem('accountId'), name: listForm[0].value }
+        })
+        if(!!data) {
+            dispatch({
+                type: UPDATE_ACCOUNT_LISTS,
+                lists: [...state.accountLists, data.data.addList]
+
+            });
+            setAddList(false);
+        }
     };
-
-    // React.useEffect(() => {
-    //     if(!!billAdded) {
-    //         const allBills = [
-    //             ...state?.account?.bills,
-    //             billAdded
-    //         ];
-    //         dispatch({
-    //             type: UPDATE_ACCOUNT_BILLS,
-    //             bills: allBills
-    //         })
-    //     }
-    // }, [billAdded]);
-
-    // React.useEffect(() => {
-        
-    //     if(!!billRemoved) {
-    //         const allBills = state?.account?.bills?.filter((bill) => bill._id != billRemoved);
-    //         dispatch({
-    //             type: UPDATE_ACCOUNT_BILLS,
-    //             bills: allBills
-    //         });
-    //     } else if(!!billEdited) {
-    //         const billIndex = state?.account?.bills?.map((bill) => bill._id).indexOf(billEdited._id);
-    //         const tempBills = state?.account?.bills?.filter((bill) =>  bill._id != billEdited._id);
-    //         const allBills = tempBills.toSpliced(billIndex, 0, billEdited);
-    //         dispatch({
-    //             type: UPDATE_ACCOUNT_BILLS,
-    //             bills: allBills
-    //         });
-    //     };
-        
-    //     setBillRemoved(null);
-    //     setBillEdited(null);
-    // }, [billRemoved, billEdited]);
 
     React.useEffect(() => {
         if(!!data) {
@@ -211,8 +143,6 @@ export default function ListsView() {
             });
         }
     }, [data]);
-
-    console.log(data)
 
     if(auth.loggedIn()) {
 
@@ -227,15 +157,15 @@ export default function ListsView() {
                     closeDialog={handleCloseModal}
                 />
                 )}
-                {/* {addList && (
+                {addList && (
                     <ModalForm
-                        title={'Add Bill'}
+                        title={'Add List'}
                         fields={listForm}
                         editFields={setListForm}
-                        submitFunction={handleAddBill}
+                        submitFunction={handleAddList}
                         closeDialog={handleCloseModal}
                     />
-                )} */}
+                )}
                 <h3>Lists</h3>
                 {state?.accountLists?.length === 0 && (
                     <div>Add Your First List</div>
@@ -244,7 +174,7 @@ export default function ListsView() {
                     <Button variant="primary" className="green-color" onClick={handleOpenModal}>Add List</Button>
                 </div>
                 {!!state?.accountLists?.length && (state?.accountLists?.map((list) => (
-                            <div className="card m-3" key={list._id} id={list._id} onClick={handleViewList}>
+                            <div className="card m-3" key={list._id} id={list._id}>
                                 <div id={list._id} className="d-flex flex-wrap justify-content-between mt-1 mx-3">
                                     <h4 id={list._id}>{list.name}</h4>
                                     <div>
@@ -261,7 +191,7 @@ export default function ListsView() {
                                         </Dropdown>
                                     </div>
                                 </div>
-                                <div id={list._id} className="card-body align-items-start">
+                                <div id={list._id} onClick={handleViewList} className="card-body align-items-start">
                                     {/* <div className="card-text"><strong className="mr-3">Date of Month billed:</strong>{`${bill.date}`}</div>
                                     <div className="card-text"><strong>Amount:</strong>{` $${bill.amount}`}</div>
                                     <div className="card-text"><strong>Source:</strong>{` ${bill.source}`}</div>

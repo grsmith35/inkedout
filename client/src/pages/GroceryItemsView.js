@@ -341,8 +341,6 @@ export default function GroceryItemsView() {
         handleSearchOptions();
     }, [])
 
-    console.log(state)
-
     if(auth.loggedIn()) {
 
         return (
@@ -362,8 +360,9 @@ export default function GroceryItemsView() {
                             <Offcanvas.Title>Grocery Options</Offcanvas.Title>
                         </Offcanvas.Header>
                         <Offcanvas.Body>
-                            <form onChange={handleSearchOptions} onFocus={() => setIsFocused(() => true)} onBlur={() => setIsFocused(() => false)}>
+                            <form onChange={handleSearchOptions} className='d-flex align-items-around pt-1' onFocus={() => setIsFocused(() => true)} onBlur={() => setIsFocused(() => false)}>
                                 <input id='searchField' name='searchField'></input>
+                                <CheckMarkIcon id={'add-list-icon'}/>Add new Option
                             </form>
 
                             <Table striped bordered hover className="px-3">
