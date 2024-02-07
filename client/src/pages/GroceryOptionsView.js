@@ -135,41 +135,6 @@ export default function GroceryOptionView() {
         }
     };
 
-    // React.useEffect(() => {
-    //     if(!!billAdded) {
-    //         const allBills = [
-    //             ...state?.account?.bills,
-    //             billAdded
-    //         ];
-    //         dispatch({
-    //             type: UPDATE_ACCOUNT_BILLS,
-    //             bills: allBills
-    //         })
-    //     }
-    // }, [billAdded]);
-
-    // React.useEffect(() => {
-        
-    //     if(!!billRemoved) {
-    //         const allBills = state?.account?.bills?.filter((bill) => bill._id != billRemoved);
-    //         dispatch({
-    //             type: UPDATE_ACCOUNT_BILLS,
-    //             bills: allBills
-    //         });
-    //     } else if(!!billEdited) {
-    //         const billIndex = state?.account?.bills?.map((bill) => bill._id).indexOf(billEdited._id);
-    //         const tempBills = state?.account?.bills?.filter((bill) =>  bill._id != billEdited._id);
-    //         const allBills = tempBills.toSpliced(billIndex, 0, billEdited);
-    //         dispatch({
-    //             type: UPDATE_ACCOUNT_BILLS,
-    //             bills: allBills
-    //         });
-    //     };
-        
-    //     setBillRemoved(null);
-    //     setBillEdited(null);
-    // }, [billRemoved, billEdited]);
-
     React.useEffect(() => {
         if(!!data) {
             dispatch({
@@ -187,8 +152,6 @@ export default function GroceryOptionView() {
             });
         }
     }, [areaData])
-
-    console.log(state)
 
     if(auth.loggedIn()) {
 

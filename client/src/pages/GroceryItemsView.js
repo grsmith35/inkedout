@@ -309,12 +309,35 @@ export default function GroceryItemsView() {
                 value: item.amount
             },
         ]);
-        setAddAmountId(id)
-    }
+        setAddAmountId(id);
+    };
 
     const handleNavigateBack = () => {
-        navigate(`/Lists`)
+        navigate(`/Lists`);
     };
+
+    const [listOrgItems, listOptions] = React.useMemo(() => {
+        let listOptions = []
+
+        // const listAreas = []
+        // state?.listItems?.map((li) => {
+        //     if(!listAreas.includes(li.areaId)) {
+        //         listAreas.push({ id: li.areaId, items: [li] });
+        //     }
+        //     let itemIndex = listAreas.indexOf({ id: li.areaId });
+        //     console.log(itemIndex);
+        //     listAreas[itemIndex].items.push({li});
+        // });
+        // console.log(listAreas);
+        console.log(state?.searchedOptions);
+        // let listOrgItems = state?.listItems?.sort((a, b) => (a.areaId > b.areaId ? 1 : -1)) ?? [];
+        // let listOptions = state?.searchedOptions?.sort((a, b) => (a.name > b.name ? 1 : -1)) ?? [];
+        if(!!state?.searchedOptions) {
+            listOptions = state.searchedOptions.sort((a,b)=> (a.name.toLowerCase() > b.name.toLowerCase() ? 1 : -1))
+        }
+        let listOrgItems = []
+        return [listOrgItems, listOptions];
+    }, [state?.listItems, state?.searchedOptions]);
 
     React.useEffect(() => {
         if(!!listId) {
@@ -326,7 +349,7 @@ export default function GroceryItemsView() {
         if(!!addAmountId.length) {
             setAddAmountModal(true);
         }
-    }, [addAmountId])
+    }, [addAmountId]);
 
     React.useEffect(() => {
         if(!!data) {
@@ -335,11 +358,11 @@ export default function GroceryItemsView() {
                 areas: data.getAreas
             });
         }
-    }, [data])
+    }, [data]);
 
     React.useEffect(() => {
         handleSearchOptions();
-    }, [])
+    }, []);
 
     if(auth.loggedIn()) {
 
@@ -373,7 +396,7 @@ export default function GroceryItemsView() {
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {state?.searchedOptions?.map((so) => (
+                                    {listOptions?.map((so) => (
                                         <tr key={so._id} id={so._id}>
                                             <td>{so.name}</td>
                                             <td className="d-flex justify-content-center">
