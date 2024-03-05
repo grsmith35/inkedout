@@ -4,6 +4,16 @@ const { dateScalar } = require('../models/ScalarTypes');
 const typeDefs = gql`
     scalar Date
 
+    enum Order {
+        ASC
+        DESC
+    }
+
+    input SortBy {
+        field: String!
+        order: Order!
+    }
+
     type Account {
         _id: ID
         name: String!

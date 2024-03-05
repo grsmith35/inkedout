@@ -154,6 +154,14 @@ code {
   width: 1rem;
 }
 
+.in-cart-item {
+  background-color: rgba(4,93,37,.5);
+}
+
+.canceled-cart-item {
+  text-decoration: line-through;
+}
+
 .fixedbutton {
   position: fixed;
   bottom: 0px;

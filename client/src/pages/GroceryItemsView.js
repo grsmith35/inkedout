@@ -21,6 +21,7 @@ import CheckMarkIcon from "../Components/CheckMarkIcon";
 export default function GroceryItemsView() {
     const { listId } = useParams();
     const navigate = useNavigate();
+    // const listAreas = [];
     const [addItemAmount] = useMutation(EDIT_GROCERY_ITEM)
     const [list] = useLazyQuery(QUERY_ITEMS_BY_LIST);
     const [searchField, setSearchField] = React.useState("");
@@ -33,64 +34,7 @@ export default function GroceryItemsView() {
     const [showAddList, setShowAddList] = React.useState(false);
     const { data, loading, error } = useQuery(QUERY_AREAS, {
         variables: { accountId: localStorage.getItem('accountId')}
-    });
-    // const [editList, setEditList] = React.useState(false);    
-    // const [addList, setAddList] = React.useState(false);
-    // const [addNewList] = useMutation(ADD_LIST);
-    // // const [billAdded, setBillAdded] = React.useState();
-    // const [deleteList] = useMutation(DELETE_LIST);
-    // const [editListPatch] = useMutation(EDIT_LIST);
-    // const [billRemoved, setBillRemoved] = React.useState();
-    // const [ListEdited, setListEdited] = React.useState();
-    // const [editListId, setEditListId] = React.useState();
-    
-    // const { data: areaData, loading: areaLoading, error: areaError} = useQuery(
-    //     QUERY_AREAS, {
-    //         variables: { accountId: localStorage.getItem('accountId')}
-    //     }
-    // )
-    
-    // const handleEditList = (e) => {
-        // const billToEdit = state?.account?.bills?.filter((bill) => bill._id === e.target.id)
-        // setEditBillId(() => billToEdit[0]._id)
-        // setBillsForm([
-        //     {
-        //         title: "List Name",
-        //         type: "text",
-        //         name: "name",
-        //         value: billToEdit[0].name,
-        //         defaultValue: billToEdit[0].name
-        //     },
-        //     {
-        //         title: "Day of month Due",
-        //         type: "text",
-        //         name: 'date',
-        //         value: billToEdit[0].date,
-        //         defaultValue: billToEdit[0].date
-        //     },
-        //     {
-        //         title: "Source",
-        //         type: "text",
-        //         name: 'source',
-        //         value: billToEdit[0].source,
-        //         defaultValue: billToEdit[0].source
-        //     },
-        //     {
-        //         title: "Amount",
-        //         type: "number",
-        //         name: "amount",
-        //         value: billToEdit[0].amount,
-        //         defaultValue: billToEdit[0].amount
-        //     },{
-        //         title: "Automated",
-        //         type: "checkbox",
-        //         name: "automated",
-        //         value: !!billToEdit[0].automated ? 'on' : false,
-        //         defaultValue: !!billToEdit[0].automated  ? 'on' : false
-        //     }
-        // ])
-        // setEditBill(true);
-    // }
+    });    
 
     const handleGetList = async () => {
         const groceryList = await list({
@@ -104,43 +48,7 @@ export default function GroceryItemsView() {
                 listItems: groceryList.data.getItemsByList
             })
         }
-        console.log(groceryList);
     }
-
-    // const handleOpenModal = () => {
-        // setBillsForm([
-        //     {
-        //         title: "Bill Name",
-        //         type: "text",
-        //         name: "name",
-        //         value: ""
-        //     },
-        //     {
-        //         title: "Day of month Due",
-        //         type: "text",
-        //         name: 'date',
-        //         value: ""
-        //     },
-        //     {
-        //         title: "Source",
-        //         type: "text",
-        //         name: 'source',
-        //         value: ""
-        //     },
-        //     {
-        //         title: "Amount",
-        //         type: "number",
-        //         name: "amount",
-        //         value: "0"
-        //     },{
-        //         title: "Automated",
-        //         type: "checkbox",
-        //         name: "automated",
-        //         value: false
-        //     }
-        // ])
-        // setAddBill(true)
-    // };
 
     const [amountForm, setAmountForm] = React.useState([
         {
@@ -153,88 +61,7 @@ export default function GroceryItemsView() {
 
     const handleCloseModal = (e) => {
         setAddAmountModal(() => false);
-        // setEditList(() => false);
     };
-
-    // const handleViewList = (e) => {
-    //     console.log(e.target.id);
-    //     if(!!e.target.id) {
-    //         navigate("/Bill");
-    //     }
-    // }
-
-    // const handleDeleteList = async (e) => {
-        // const removedBill = await deleteBill({
-        //     variables: { _id: `${e.target.id}`, accountId: state?.account?._id}
-        // })
-        // if(!!removedBill) {
-        //     setBillRemoved(e.target.id)
-        // }
-    // };
-
-    // const handlePatchList = async () => {
-    //     const editedList = await editListPatch({
-    //         variables: { _id: editListId, name: listForm[0].value, date: listForm[1].value }
-    //     });
-    //     if(!!editedList) {
-    //         setListEdited(editedList.data.editList);
-    //         setEditList(false)
-    //     }
-    // }
-
-    // const handleAddList = async () => {
-        // const data = await addNewBill({
-        //     variables: { _id: state?.account?._id, name: billsForm[0].value, date: billsForm[1].value, source: billsForm[2].value, amount: parseFloat(billsForm[3].value), automated: billsForm[4].value }
-        // })
-        // if(!!data) {
-        //     setBillAdded(data.data.addBill);
-        //     setAddBill(false);
-        // }
-    // };
-
-    // React.useEffect(() => {
-    //     if(!!billAdded) {
-    //         const allBills = [
-    //             ...state?.account?.bills,
-    //             billAdded
-    //         ];
-    //         dispatch({
-    //             type: UPDATE_ACCOUNT_BILLS,
-    //             bills: allBills
-    //         })
-    //     }
-    // }, [billAdded]);
-
-    // React.useEffect(() => {
-        
-    //     if(!!billRemoved) {
-    //         const allBills = state?.account?.bills?.filter((bill) => bill._id != billRemoved);
-    //         dispatch({
-    //             type: UPDATE_ACCOUNT_BILLS,
-    //             bills: allBills
-    //         });
-    //     } else if(!!billEdited) {
-    //         const billIndex = state?.account?.bills?.map((bill) => bill._id).indexOf(billEdited._id);
-    //         const tempBills = state?.account?.bills?.filter((bill) =>  bill._id != billEdited._id);
-    //         const allBills = tempBills.toSpliced(billIndex, 0, billEdited);
-    //         dispatch({
-    //             type: UPDATE_ACCOUNT_BILLS,
-    //             bills: allBills
-    //         });
-    //     };
-        
-    //     setBillRemoved(null);
-    //     setBillEdited(null);
-    // }, [billRemoved, billEdited]);
-
-    // React.useEffect(() => {
-    //     if(!!data) {
-    //         dispatch({
-    //             type: UPDATE_ACCOUNT_LISTS,
-    //             lists: data.getLists
-    //         });
-    //     }
-    // }, [data]);
 
     const handleSearchOptions = async (e) => {
         const searchItems = await searchedItems({
@@ -316,27 +143,36 @@ export default function GroceryItemsView() {
         navigate(`/Lists`);
     };
 
-    const [listOrgItems, listOptions] = React.useMemo(() => {
-        let listOptions = []
+    function compare( a, b ) {
+        if ( a.name < b.name ){
+          return -1;
+        }
+        if ( a.name > b.name ){
+          return 1;
+        }
+        return 0;
+      }
+      
+    //   objs.sort( compare );
 
-        // const listAreas = []
-        // state?.listItems?.map((li) => {
-        //     if(!listAreas.includes(li.areaId)) {
-        //         listAreas.push({ id: li.areaId, items: [li] });
-        //     }
-        //     let itemIndex = listAreas.indexOf({ id: li.areaId });
-        //     console.log(itemIndex);
-        //     listAreas[itemIndex].items.push({li});
-        // });
-        // console.log(listAreas);
-        console.log(state?.searchedOptions);
+    const [listOrgItems, listOptions, listAreas] = React.useMemo(() => {
+        let sortItemsArray = state?.listItems?.map((i) => i);
+        let sortOptionsArray = state?.searchedOptions?.map((i) => i);
+        let listAreas = []
+        state?.listItems?.map((li) => {
+            if(!listAreas.includes(li.areaId)) {
+                listAreas.push(li.areaId);
+            }
+            return;
+        });
         // let listOrgItems = state?.listItems?.sort((a, b) => (a.areaId > b.areaId ? 1 : -1)) ?? [];
         // let listOptions = state?.searchedOptions?.sort((a, b) => (a.name > b.name ? 1 : -1)) ?? [];
-        if(!!state?.searchedOptions) {
-            listOptions = state.searchedOptions.sort((a,b)=> (a.name.toLowerCase() > b.name.toLowerCase() ? 1 : -1))
-        }
-        let listOrgItems = []
-        return [listOrgItems, listOptions];
+        // if(!!state?.searchedOptions) {
+        //     listOptions = state.searchedOptions.sort((a,b)=> (a.name.toLowerCase() > b.name.toLowerCase() ? 1 : -1))
+        // }
+        let listOptions = sortOptionsArray?.sort(compare);
+        let listOrgItems = sortItemsArray?.sort(compare)
+        return [listOrgItems, listOptions, listAreas];
     }, [state?.listItems, state?.searchedOptions]);
 
     React.useEffect(() => {
@@ -344,6 +180,8 @@ export default function GroceryItemsView() {
             handleGetList()
         };
     }, [listId]);
+
+    console.log(state)
 
     React.useEffect(() => {
         if(!!addAmountId.length) {
@@ -389,6 +227,7 @@ export default function GroceryItemsView() {
                             </form>
 
                             <Table striped bordered hover className="px-3">
+                                
                                 <thead>
                                     <tr>
                                         <th>Name</th>
@@ -431,15 +270,22 @@ export default function GroceryItemsView() {
                             <th>Amount</th>
                         </tr>
                     </thead>
-                    <tbody>
-                        {!!state?.listItems && state?.listItems?.map((li) => (
-                            <tr key={li._id} id={li._id}>
-                                <td>{li.name}</td>
-                                <td>{state?.areas?.find((a) => a._id === li.areaId)?.name}</td>
-                                <td id={li._id} onClick={() => handleAddAmountModal(li._id)}>{formatCurrency(li.amount)}</td>
-                            </tr>
+                        {listAreas?.map((la) => (
+                            <tbody key={la}>
+                                <tr>
+                                    <th colSpan={3}>
+                                        {state?.areas.find((a) => a._id === la)?.name ?? 'Other'}
+                                    </th>
+                                </tr>
+                                {listOrgItems?.filter((i) => i.areaId === la)?.map((li) => (
+                                    <tr key={li._id} id={li._id} className={!!li.amount && 'canceled-cart-item'}>
+                                        <td>{li.name}</td>
+                                        <td>{state?.areas?.find((a) => a._id === li.areaId)?.name}</td>
+                                        <td id={li._id} onClick={() => handleAddAmountModal(li._id)}>{formatCurrency(li.amount)}</td>
+                                    </tr>
+                                ))}
+                            </tbody>
                         ))}
-                    </tbody>
                 </Table>
             </>
         )
