@@ -4,7 +4,7 @@ import Button from 'react-bootstrap/Button';
 import ModalForm from "../Components/ModalForm";
 import { useMutation, useQuery, useLazyQuery } from "@apollo/client";
 import { QUERY_LIST_ITEMS, QUERY_OPTIONS_BY_NAME, QUERY_ITEMS_BY_LIST, QUERY_AREAS } from "../utils/queries";
-import { ADD_LIST, DELETE_LIST, EDIT_GROCERY_ITEM, EDIT_LIST, ADD_GROCERY_ITEM } from "../utils/mutations";
+import { ADD_LIST, DELETE_LIST, EDIT_GROCERY_ITEM, EDIT_LIST, ADD_GROCERY_ITEM, DELETE_GROCERY_ITEM } from "../utils/mutations";
 import { UPDATE_ACCOUNT_AREAS, UPDATE_ACCOUNT_LISTS, UPDATE_LIST_ITEMS, UPDATE_SEARCHED_OPTIONS } from "../utils/actions";
 import auth from "../utils/auth";
 import { useParams } from "react-router-dom";
@@ -16,13 +16,15 @@ import { filterListFromOptions, replaceItemInArray, formatCurrency } from '../ut
 import CarrotArrow from "../Components/CarrotArrow";
 import { useNavigate } from "react-router-dom";
 import CheckMarkIcon from "../Components/CheckMarkIcon";
+import DeleteIcon from '../Components/DeleteIcon';
 
 
 export default function GroceryItemsView() {
     const { listId } = useParams();
     const navigate = useNavigate();
     // const listAreas = [];
-    const [addItemAmount] = useMutation(EDIT_GROCERY_ITEM)
+    const [addItemAmount] = useMutation(EDIT_GROCERY_ITEM);
+    const [removeItem] = useMutation(DELETE_GROCERY_ITEM);
     const [list] = useLazyQuery(QUERY_ITEMS_BY_LIST);
     const [searchField, setSearchField] = React.useState("");
     const [isFocused, setIsFocused] = React.useState(false);
@@ -139,6 +141,20 @@ export default function GroceryItemsView() {
         setAddAmountId(id);
     };
 
+    const handleRemoveListItem = async (id) => {
+        const listItem = await removeItem({
+            variables: {
+                _id: id
+            }
+        });
+        if(!!listItem) {
+            dispatch({
+                type: UPDATE_LIST_ITEMS,
+                listItems: state.listItems.filter((li) => li._id !== id)
+            });
+        }
+    }
+
     const handleNavigateBack = () => {
         navigate(`/Lists`);
     };
@@ -153,8 +169,6 @@ export default function GroceryItemsView() {
         return 0;
       }
       
-    //   objs.sort( compare );
-
     const [listOrgItems, listOptions, listAreas] = React.useMemo(() => {
         let sortItemsArray = state?.listItems?.map((i) => i);
         let sortOptionsArray = state?.searchedOptions?.map((i) => i);
@@ -165,11 +179,6 @@ export default function GroceryItemsView() {
             }
             return;
         });
-        // let listOrgItems = state?.listItems?.sort((a, b) => (a.areaId > b.areaId ? 1 : -1)) ?? [];
-        // let listOptions = state?.searchedOptions?.sort((a, b) => (a.name > b.name ? 1 : -1)) ?? [];
-        // if(!!state?.searchedOptions) {
-        //     listOptions = state.searchedOptions.sort((a,b)=> (a.name.toLowerCase() > b.name.toLowerCase() ? 1 : -1))
-        // }
         let listOptions = sortOptionsArray?.sort(compare);
         let listOrgItems = sortItemsArray?.sort(compare)
         return [listOrgItems, listOptions, listAreas];
@@ -181,7 +190,6 @@ export default function GroceryItemsView() {
         };
     }, [listId]);
 
-    console.log(state)
 
     React.useEffect(() => {
         if(!!addAmountId.length) {
@@ -268,6 +276,7 @@ export default function GroceryItemsView() {
                             <th>Name</th>
                             <th>Area</th>
                             <th>Amount</th>
+                            <th>Delete</th>
                         </tr>
                     </thead>
                         {listAreas?.map((la) => (
@@ -278,10 +287,15 @@ export default function GroceryItemsView() {
                                     </th>
                                 </tr>
                                 {listOrgItems?.filter((i) => i.areaId === la)?.map((li) => (
-                                    <tr key={li._id} id={li._id} className={!!li.amount && 'canceled-cart-item'}>
+                                    <tr key={li._id} id={li._id} className={!!li.amount ? 'canceled-cart-item' : ''}>
                                         <td>{li.name}</td>
                                         <td>{state?.areas?.find((a) => a._id === li.areaId)?.name}</td>
                                         <td id={li._id} onClick={() => handleAddAmountModal(li._id)}>{formatCurrency(li.amount)}</td>
+                                        <td id={li._id}>
+                                            <div id={li._id} onClick={() => handleRemoveListItem(li._id)}>
+                                                <DeleteIcon id={li._id}/>
+                                            </div>
+                                        </td>
                                     </tr>
                                 ))}
                             </tbody>

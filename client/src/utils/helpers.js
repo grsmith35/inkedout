@@ -26,7 +26,7 @@ export function formFieldCreator(field) {
                 <Form.Label>{field.title}</Form.Label>
                 <InputGroup className="mb-3">
                     <InputGroup.Text>$</InputGroup.Text>
-                    <Form.Control name={field.name} aria-label="Amount" defaultValue={field?.value > 0 ? field.value : 0}/>
+                    <Form.Control name={field.name} type='number' aria-label="Amount" defaultValue={field?.value > 0 ? field.value : 0}/>
                     {/* <InputGroup.Text>.00</InputGroup.Text> */}
                 </InputGroup>
                 </Form.Group>

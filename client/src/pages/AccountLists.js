@@ -121,6 +121,10 @@ export default function ListsView() {
         }
     }
 
+    const handleClearList = async () => {
+        
+    }
+
     const handleAddList = async () => {
         const data = await addNewList({
             variables: { accountId: localStorage.getItem('accountId'), name: listForm[0].value }
@@ -187,20 +191,12 @@ export default function ListsView() {
                                             <Dropdown.Menu className='drop-down'>
                                                 <Dropdown.Item id={list._id} onClick={handleEditList}>Edit</Dropdown.Item>
                                                 <Dropdown.Item id={list._id} onClick={handleDeleteList}>Delete</Dropdown.Item>
+                                                <Dropdown.Item id={list._id} onClick={handleClearList}>Clear List Items</Dropdown.Item>
                                             </Dropdown.Menu>
                                         </Dropdown>
                                     </div>
                                 </div>
                                 <div id={list._id} onClick={handleViewList} className="card-body align-items-start">
-                                    {/* <div className="card-text"><strong className="mr-3">Date of Month billed:</strong>{`${bill.date}`}</div>
-                                    <div className="card-text"><strong>Amount:</strong>{` $${bill.amount}`}</div>
-                                    <div className="card-text"><strong>Source:</strong>{` ${bill.source}`}</div>
-                                        {!bill.automated ? (   
-                                                <div></div>
-                                            ) : (
-                                                <div className="card-text"><strong>Automated</strong></div>
-                                            )
-                                        } */}
                                     {`${list.itemCount} items on list`}
                                 </div>
                             </div>
