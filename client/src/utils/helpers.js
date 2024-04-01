@@ -66,7 +66,7 @@ export function formFieldCreator(field) {
                 <Form.Group key={`${field.title}-key`}>
                     <Form.Label>{field.title}</Form.Label>
                     <Form.Select className='mb-3' aria-label={field.name} name={field.name} defaultValue={field?.value?.length > 0 ?? field.value }>
-                        {list?.map((i) => <option value={i.value}>{i.name}</option>)}
+                        {list?.map((i) => <option key={i.value} value={i.value}>{i.name}</option>)}
                     </Form.Select>
                 </Form.Group>
             )

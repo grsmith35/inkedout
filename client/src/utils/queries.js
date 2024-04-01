@@ -147,6 +147,7 @@ export const QUERY_ITEMS_BY_LIST = gql`
             amount
             areaId
             optionId
+            quantity
         }
     }
 `;

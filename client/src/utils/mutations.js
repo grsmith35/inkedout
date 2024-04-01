@@ -263,26 +263,28 @@ export const ADD_GROCERY_ITEM = gql`
             listId
             amount
             optionId
+            quantity
         }
     }
 `;
 
 export const EDIT_GROCERY_ITEM = gql`
-    mutation editGroceryItem($_id: ID!, $name: String, $areaId: ID, $listId: ID, $amount: Float) {
-        editGroceryItem(_id: $_id, name: $name, areaId: $areaId, listId: $listId, amount: $amount) {
+    mutation editGroceryItem($_id: ID!, $name: String, $areaId: ID, $listId: ID, $amount: Float, $quantity: Int) {
+        editGroceryItem(_id: $_id, name: $name, areaId: $areaId, listId: $listId, amount: $amount, quantity: $quantity) {
             _id
             name
             amount
             areaId
             listId
             optionId
+            quantity
         }
     }
 `;
 
 export const DELETE_GROCERY_ITEM = gql`
-    mutation deleteGroceryItem($_id: ID!) {
-        deleteGroceryItem(_id: $_id) {
+    mutation deleteGroceryItem($_id: ID!, $listId: ID!) {
+        deleteGroceryItem(_id: $_id, listId: $listId) {
             _id
         }
     }
@@ -315,3 +317,17 @@ export const DELETE_LIST = gql`
         }
     }
 `;
+
+export const DELETE_ALL_LIST_ITEMS = gql`
+    mutation deleteAllGroceryItems($_id: ID!, $itemsList: String!) {
+        deleteAllGroceryItems(_id: $_id, itemsList: $itemsList) {
+            _id
+            name
+            accountId
+            itemCount
+            items {
+                _id
+            }
+        }
+    }
+`

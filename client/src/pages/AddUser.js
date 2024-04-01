@@ -13,7 +13,7 @@ export default function AddUser() {
 
     const handleSubmitUser = async () => {
         const newUser = await postUser({
-            variables: { name: 'Demo Account', email: 'Demo@email.com', password: '1234' }
+            variables: { name: 'Demo Account', email: 'riley@email.com', password: '1234' }
         });
     };
 

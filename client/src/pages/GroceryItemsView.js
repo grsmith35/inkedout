@@ -3,14 +3,13 @@ import { useStoreContext } from "../utils/GlobalState";
 import Button from 'react-bootstrap/Button';
 import ModalForm from "../Components/ModalForm";
 import { useMutation, useQuery, useLazyQuery } from "@apollo/client";
-import { QUERY_LIST_ITEMS, QUERY_OPTIONS_BY_NAME, QUERY_ITEMS_BY_LIST, QUERY_AREAS } from "../utils/queries";
-import { ADD_LIST, DELETE_LIST, EDIT_GROCERY_ITEM, EDIT_LIST, ADD_GROCERY_ITEM, DELETE_GROCERY_ITEM } from "../utils/mutations";
-import { UPDATE_ACCOUNT_AREAS, UPDATE_ACCOUNT_LISTS, UPDATE_LIST_ITEMS, UPDATE_SEARCHED_OPTIONS } from "../utils/actions";
+import { QUERY_OPTIONS_BY_NAME, QUERY_ITEMS_BY_LIST, QUERY_AREAS } from "../utils/queries";
+import { EDIT_GROCERY_ITEM, ADD_GROCERY_ITEM, DELETE_GROCERY_ITEM } from "../utils/mutations";
+import { UPDATE_ACCOUNT_AREAS, UPDATE_LIST_ITEMS, UPDATE_SEARCHED_OPTIONS } from "../utils/actions";
 import auth from "../utils/auth";
 import { useParams } from "react-router-dom";
 import Login from "./Login";
-import Dropdown from 'react-bootstrap/Dropdown';
-import { Row, Col, Table } from 'react-bootstrap';
+import { Table, Form } from 'react-bootstrap';
 import Offcanvas from 'react-bootstrap/Offcanvas';
 import { filterListFromOptions, replaceItemInArray, formatCurrency } from '../utils/helpers';
 import CarrotArrow from "../Components/CarrotArrow";
@@ -22,14 +21,16 @@ import DeleteIcon from '../Components/DeleteIcon';
 export default function GroceryItemsView() {
     const { listId } = useParams();
     const navigate = useNavigate();
-    // const listAreas = [];
+    const quantityOptions  = [0,1,2,3,4,5,6,7,8,9,10];
     const [addItemAmount] = useMutation(EDIT_GROCERY_ITEM);
     const [removeItem] = useMutation(DELETE_GROCERY_ITEM);
-    const [list] = useLazyQuery(QUERY_ITEMS_BY_LIST);
-    const [searchField, setSearchField] = React.useState("");
+    const [list, { refetch, data: refetchData }] = useLazyQuery(QUERY_ITEMS_BY_LIST, {
+        variables: { listId: listId }
+    });
     const [isFocused, setIsFocused] = React.useState(false);
     const [addAmountId, setAddAmountId] = React.useState("");
     const [addAmountModal, setAddAmountModal] = React.useState(false);
+    const [searchTerm, setSearchTerm] = React.useState('');
     const [searchedItems] = useLazyQuery(QUERY_OPTIONS_BY_NAME);
     const [addOptionToList] = useMutation(ADD_GROCERY_ITEM);
     const [state, dispatch] = useStoreContext();
@@ -40,11 +41,13 @@ export default function GroceryItemsView() {
 
     const handleGetList = async () => {
         const groceryList = await list({
+            nextFetchPolicy: 'network-only',
             variables: {
-                listId: listId
+                listId: listId,
+                
             }
         });
-        if(!!groceryList.data.getItemsByList) {
+        if(!!groceryList?.data?.getItemsByList) {
             dispatch({
                 type: UPDATE_LIST_ITEMS,
                 listItems: groceryList.data.getItemsByList
@@ -66,6 +69,7 @@ export default function GroceryItemsView() {
     };
 
     const handleSearchOptions = async (e) => {
+        setSearchTerm(() => e?.target?.value);
         const searchItems = await searchedItems({
             variables: {
                 accountId: localStorage.getItem('accountId'),
@@ -115,7 +119,8 @@ export default function GroceryItemsView() {
         const updateItemAmount = await addItemAmount({
             variables: {
                 ...item,
-                amount: parseFloat(amountForm[0].value)
+                amount: parseFloat(amountForm[0].value),
+                quantity: !item.quantity ? 1 : item.quantity
             }
         });
         if(!!updateItemAmount.data.editGroceryItem) {
@@ -144,7 +149,8 @@ export default function GroceryItemsView() {
     const handleRemoveListItem = async (id) => {
         const listItem = await removeItem({
             variables: {
-                _id: id
+                _id: id,
+                listId: listId
             }
         });
         if(!!listItem) {
@@ -159,6 +165,22 @@ export default function GroceryItemsView() {
         navigate(`/Lists`);
     };
 
+    const handleNumberChange = async (e) => {
+        const item = state.listItems.find((li) => li._id === e.target.id);
+        const updateAmountQuantity = await addItemAmount({
+            variables: {
+                _id: e.target.id,
+                quantity: parseInt(e.target.value)
+            }
+        });
+        if(!!updateAmountQuantity) {
+            dispatch({
+                type: UPDATE_LIST_ITEMS,
+                listItems: replaceItemInArray(state.listItems, item, updateAmountQuantity.data.editGroceryItem)
+            })
+        }
+    };
+
     function compare( a, b ) {
         if ( a.name < b.name ){
           return -1;
@@ -171,7 +193,9 @@ export default function GroceryItemsView() {
       
     const [listOrgItems, listOptions, listAreas] = React.useMemo(() => {
         let sortItemsArray = state?.listItems?.map((i) => i);
+        let listItemIds = state?.listItems?.map((i) => i.optionId)
         let sortOptionsArray = state?.searchedOptions?.map((i) => i);
+        // let listOptions;
         let listAreas = []
         state?.listItems?.map((li) => {
             if(!listAreas.includes(li.areaId)) {
@@ -179,6 +203,11 @@ export default function GroceryItemsView() {
             }
             return;
         });
+        // if(!!searchTerm) {
+        //     listOptions = sortOptionsArray?.sort(compare);
+        // } else {
+        //     listOptions = sortOptionsArray?.sort(compare)?.filter((o) => !listItemIds.includes(o._id))
+        // }
         let listOptions = sortOptionsArray?.sort(compare);
         let listOrgItems = sortItemsArray?.sort(compare)
         return [listOrgItems, listOptions, listAreas];
@@ -186,16 +215,30 @@ export default function GroceryItemsView() {
 
     React.useEffect(() => {
         if(!!listId) {
-            handleGetList()
+            handleGetList();
         };
     }, [listId]);
 
+    React.useEffect(() => {
+        if(showAddList) {
+
+        }
+    }, [showAddList])
 
     React.useEffect(() => {
         if(!!addAmountId.length) {
             setAddAmountModal(true);
         }
     }, [addAmountId]);
+
+    React.useEffect(() => {
+        if(!!refetchData) {
+            dispatch({
+                type: UPDATE_LIST_ITEMS,
+                listItems: refetchData?.data?.getItemsByList
+            })
+        }
+    }, [refetchData])
 
     React.useEffect(() => {
         if(!!data) {
@@ -207,8 +250,10 @@ export default function GroceryItemsView() {
     }, [data]);
 
     React.useEffect(() => {
-        handleSearchOptions();
-    }, []);
+        if(!showAddList) {
+            handleSearchOptions();
+        }
+    }, [showAddList]);
 
     if(auth.loggedIn()) {
 
@@ -268,7 +313,14 @@ export default function GroceryItemsView() {
                         <CarrotArrow isPointingLeft={true} />
                     </div>
                     <h3>{state?.accountLists?.find((al) => al._id === listId).name}</h3>
-                    <div>{`Total: ${!!state?.listItems?.length ? formatCurrency(sumUpAmounts(state?.listItems?.map((li) => li.amount ?? 0))) : formatCurrency(0)}`}</div>
+                    <div>
+                        <div className='row'>
+                            {`Total: ${!!state?.listItems?.length ? formatCurrency(sumUpAmounts(state?.listItems?.map((li) => li.amount * li.quantity ?? 0))) : formatCurrency(0)}`}
+                        </div>
+                        <div className="row">
+                            {`Total After Tax: ${!!state?.listItems?.length ? formatCurrency(sumUpAmounts(state?.listItems?.map((li) => li.amount * li.quantity ?? 0)) * 1.03) : formatCurrency(0)}`}
+                        </div>
+                    </div>
                 </div>
                 <Table striped bordered hover className="px-3">
                     <thead>
@@ -276,14 +328,15 @@ export default function GroceryItemsView() {
                             <th>Name</th>
                             <th>Area</th>
                             <th>Amount</th>
+                            <th>Quantity</th>
                             <th>Delete</th>
                         </tr>
                     </thead>
                         {listAreas?.map((la) => (
                             <tbody key={la}>
                                 <tr>
-                                    <th colSpan={3}>
-                                        {state?.areas.find((a) => a._id === la)?.name ?? 'Other'}
+                                    <th colSpan={5}>
+                                        {state?.areas?.find((a) => a._id === la)?.name ?? 'Other'}
                                     </th>
                                 </tr>
                                 {listOrgItems?.filter((i) => i.areaId === la)?.map((li) => (
@@ -291,6 +344,13 @@ export default function GroceryItemsView() {
                                         <td>{li.name}</td>
                                         <td>{state?.areas?.find((a) => a._id === li.areaId)?.name}</td>
                                         <td id={li._id} onClick={() => handleAddAmountModal(li._id)}>{formatCurrency(li.amount)}</td>
+                                        <td id={li._id}>
+                                            <Form.Group>
+                                                <Form.Select name={li.name} id={li._id} value={li.quantity} onChange={handleNumberChange}>
+                                                    {quantityOptions.map((i) => <option key={i} value={i}>{i}</option>)}
+                                                </Form.Select>
+                                            </Form.Group>
+                                        </td>
                                         <td id={li._id}>
                                             <div id={li._id} onClick={() => handleRemoveListItem(li._id)}>
                                                 <DeleteIcon id={li._id}/>

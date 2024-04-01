@@ -15,7 +15,6 @@ const startServer = async () => {
   const server = new ApolloServer({
     typeDefs,
     resolvers,
-    // playground: true,
     playground: {
         endpoint: "/api/graphql",
       },

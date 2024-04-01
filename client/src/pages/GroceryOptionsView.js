@@ -3,35 +3,30 @@ import { useStoreContext } from "../utils/GlobalState";
 import Button from 'react-bootstrap/Button';
 import ModalForm from "../Components/ModalForm";
 import { useMutation, useQuery } from "@apollo/client";
-import { QUERY_ACCOUNT_LISTS, QUERY_AREAS, QUERY_OPTIONS } from "../utils/queries";
-import { ADD_AREA, ADD_OPTION, DELETE_AREA, DELETE_LIST, DELETE_OPTION, EDIT_AREA, EDIT_LIST, EDIT_OPTION } from "../utils/mutations";
+import { QUERY_AREAS, QUERY_OPTIONS } from "../utils/queries";
+import { ADD_OPTION, DELETE_OPTION, EDIT_OPTION } from "../utils/mutations";
 import { UPDATE_ACCOUNT_AREAS, UPDATE_ACCOUNT_OPTIONS } from "../utils/actions";
 import auth from "../utils/auth";
 import Login from "./Login";
-import { useNavigate } from "react-router-dom";
 import Dropdown from 'react-bootstrap/Dropdown';
 import NavItem from 'react-bootstrap/NavItem';
 import NavLink from 'react-bootstrap/NavLink';
 
 export default function GroceryOptionView() {
-    const navigate = useNavigate();
     const [state, dispatch] = useStoreContext();
     const [editOption, setEditOption] = React.useState(false);    
     const [addOption, setAddOption] = React.useState(false);
     const [addNewOption] = useMutation(ADD_OPTION);
-    // const [billAdded, setBillAdded] = React.useState();
     const [deleteOption] = useMutation(DELETE_OPTION);
     const [editOptionPatch] = useMutation(EDIT_OPTION);
     const [optionToEditID, setOptionToEditID] = React.useState();
-    const [billRemoved, setBillRemoved] = React.useState();
-    const [ListEdited, setListEdited] = React.useState();
-    const [editListId, setEditListId] = React.useState();
     const { data, loading, error } = useQuery(QUERY_OPTIONS, {
         variables: { accountId: localStorage.getItem('accountId')}
     });
     const { data: areaData, loading: areaLoading, error: areaError } = useQuery(QUERY_AREAS, {
         variables: { accountId: localStorage.getItem('accountId')}
     });
+
     
     const handleEditOption = (e) => {
         const optionToEdit = state?.accountOptions?.find((area) => area._id === e.target.id)
@@ -42,7 +37,6 @@ export default function GroceryOptionView() {
                 type: "text",
                 name: "name",
                 value: optionToEdit.name,
-                // defaultValue: optionToEdit.name
             },
             {
                 title: "Area",
@@ -50,7 +44,6 @@ export default function GroceryOptionView() {
                 items: state?.areas?.map((a) => { return {value: a._id, name: a.name }}),
                 name: "area",
                 value: !!optionToEdit?.areaId ? optionToEdit.areaId : "",
-                // defaultValue: optionToEdit?.areaId
             },
         ])
         setEditOption(true);
@@ -70,7 +63,6 @@ export default function GroceryOptionView() {
                 items: state?.areas?.map((a) => { return {value: a._id, name: a.name }}),
                 name: "area",
                 value: "",
-                // defaultValue: chargeToEdit?.budgetId
             },
         ])
         setAddOption(true)

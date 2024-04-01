@@ -45,6 +45,7 @@ const typeDefs = gql`
         listId: ID!
         optionId: ID!
         amount: Float
+        quantity: Int
     }
 
     type List {
@@ -126,8 +127,8 @@ const typeDefs = gql`
         editOption(_id: ID!, name: String, areaId: ID): Option
         deleteOption(_id: ID!): Option
         addGroceryItem(name: String!, areaId: ID, listId: ID!, amount: Float, optionId: ID!): GroceryList
-        editGroceryItem(_id: ID!, name: String, areaId: ID, listId: ID, amount: Float): GroceryList
-        deleteGroceryItem(_id: ID!): GroceryList
+        editGroceryItem(_id: ID!, name: String, areaId: ID, listId: ID, amount: Float, quantity: Int): GroceryList
+        deleteGroceryItem(_id: ID!, listId: ID!): GroceryList
         addList(name: String!, accountId: ID!): List
         editList(_id: ID!, name: String, accountId: ID): List
         deleteList(_id: ID!): List
@@ -145,6 +146,7 @@ const typeDefs = gql`
         addCharge(name: String!, amount: Float!, date: Date!, accountId: ID, budgetId: ID): Charge
         editCharge(_id: ID!, name: String, date: String, amount: Float, budgetId: ID): Charge
         deleteCharge(_id: ID!): Charge
+        deleteAllGroceryItems(_id: ID!, itemsList: String!): List
     }
    
 `;

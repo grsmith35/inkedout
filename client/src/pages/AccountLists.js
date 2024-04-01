@@ -2,10 +2,10 @@ import React from "react";
 import { useStoreContext } from "../utils/GlobalState";
 import Button from 'react-bootstrap/Button';
 import ModalForm from "../Components/ModalForm";
-import { useMutation, useQuery } from "@apollo/client";
+import { useLazyQuery, useMutation, useQuery } from "@apollo/client";
 import { QUERY_ACCOUNT_LISTS, QUERY_AREAS } from "../utils/queries";
-import { ADD_LIST, DELETE_LIST, EDIT_LIST } from "../utils/mutations";
-import { UPDATE_ACCOUNT_AREAS, UPDATE_ACCOUNT_LISTS } from "../utils/actions";
+import { ADD_LIST, DELETE_LIST, EDIT_LIST, DELETE_ALL_LIST_ITEMS } from "../utils/mutations";
+import { UPDATE_ACCOUNT_LISTS } from "../utils/actions";
 import auth from "../utils/auth";
 import Login from "./Login";
 import { replaceItemInArray } from '../utils/helpers';
@@ -20,24 +20,28 @@ export default function ListsView() {
     const [editList, setEditList] = React.useState(false);    
     const [addList, setAddList] = React.useState(false);
     const [addNewList] = useMutation(ADD_LIST);
-    // const [billAdded, setBillAdded] = React.useState();
+    const [clearList] = useMutation(DELETE_ALL_LIST_ITEMS);
     const [deleteList] = useMutation(DELETE_LIST);
     const [editListPatch] = useMutation(EDIT_LIST);
-    const [billRemoved, setBillRemoved] = React.useState();
-    const [ListEdited, setListEdited] = React.useState();
     const [editListId, setEditListId] = React.useState();
-    const { data, loading, error } = useQuery(QUERY_ACCOUNT_LISTS, {
+    const [getAllLists] = useLazyQuery(QUERY_ACCOUNT_LISTS);
+    const { refetch, data, loading, error } = useQuery(QUERY_ACCOUNT_LISTS, {
         variables: { accountId: localStorage.getItem('accountId')}
     });
     const { data: areaData, loading: areaLoading, error: areaError} = useQuery(
         QUERY_AREAS, {
             variables: { accountId: localStorage.getItem('accountId')}
         }
-    )
+    );
+
+    const handleGetLists = async () => {
+        console.log('in the get')
+        const lists = refetch();
+        console.log(lists)
+    }
     
     const handleEditList = (e) => {
         const listToEdit = state?.accountLists?.filter((list) => list._id === e.target.id)
-        // setEditBillId(() => billToEdit[0]._id)
         setListForm([
             {
                 title: "List Name",
@@ -46,13 +50,6 @@ export default function ListsView() {
                 value: listToEdit[0].name,
                 defaultValue: listToEdit[0].name
             },
-            // {
-            //     title: "Areas",
-            //     type: "dropdown",
-            //     items: (areaLoading ? [{ value: "No options", name: null }] : state.accountAreas),
-            //     name: 'area',
-            //     value: listToEdit[0].areaId
-            // }
         ])
         setEditList(true);
     }
@@ -65,13 +62,6 @@ export default function ListsView() {
                 name: "name",
                 value: ""
             },
-            // {
-            //     title: "Areas",
-            //     type: "dropdown",
-            //     items: (areaLoading ? [{ value: "No options", name: null }] : state.accountAreas),
-            //     name: 'area',
-            //     value: ""
-            // }
         ])
         setAddList(true)
     };
@@ -121,8 +111,17 @@ export default function ListsView() {
         }
     }
 
-    const handleClearList = async () => {
-        
+    const handleClearList = async (e) => {
+        const clearedList = await clearList({
+            variables: { _id: e.target.id, itemsList: state.accountLists.find((al) => al._id === e.target.id).items.map((i) => i._id).toString()}
+        });
+
+        if(!!clearedList) {
+            dispatch({
+                type: UPDATE_ACCOUNT_LISTS,
+                lists: replaceItemInArray(state.accountLists, state.accountLists.find((al) => al._id === e.target.id), clearedList.data.editList)
+            });
+        };
     }
 
     const handleAddList = async () => {
@@ -147,6 +146,11 @@ export default function ListsView() {
             });
         }
     }, [data]);
+
+    React.useEffect(() => {
+        console.log('hitting this');
+        handleGetLists();
+    }, [])
 
     if(auth.loggedIn()) {
 
@@ -197,7 +201,7 @@ export default function ListsView() {
                                     </div>
                                 </div>
                                 <div id={list._id} onClick={handleViewList} className="card-body align-items-start">
-                                    {`${list.itemCount} items on list`}
+                                    {`${list.itemCount ?? 0} items on list`}
                                 </div>
                             </div>
                         )))}

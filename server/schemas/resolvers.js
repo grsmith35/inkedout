@@ -2,7 +2,7 @@ const { AuthenticationError } = require('apollo-server-express');
 const { Account, Pay, Bill, Budget, Charge, Area, GroceryList, GroceryOption, List } = require('../models');
 const moment = require('moment');
 const { signToken } = require('../utils/auth');
-const { nextPayDate, getDatesArray, getBudgetRemainder } = require('../utils/helpers');
+const { nextPayDate, getDatesArray, getBudgetRemainder, parseIds } = require('../utils/helpers');
 
 const resolvers = {
     Query: {
@@ -163,12 +163,16 @@ const resolvers = {
         editGroceryItem: async (parent, args) => {
             return await GroceryList.findOneAndUpdate(
                 { _id: args._id },
-                { $set: { name: args.name, areaId: args.areaId, listId: args.listId, amount: args.amount }},
+                // { $set: { name: args.name, areaId: args.areaId, listId: args.listId, amount: args.amount }},
+                { $set: args },
                 { new: true }
             );
             // return await GroceryList.find({ listId: args.listId });
         },
-        deleteGroceryItem: async (parent, { _id }) => {
+        deleteGroceryItem: async (parent, { _id, listId }) => {
+            await List.findOneAndUpdate(
+                { _id}
+            )
             return await GroceryList.findOneAndDelete({ _id: _id });
         },
         addList: async (parent, args) => {
@@ -183,6 +187,19 @@ const resolvers = {
         },
         deleteList: async (parent, { _id }) => {
             return await List.findOneAndDelete({ _id: _id });
+        },
+        deleteAllGroceryItems: async (parent, { _id, itemsList }) => {
+            console.log(_id, itemsList)
+            const ids = parseIds(itemsList);
+            const list = List.findOneAndUpdate(
+                { _id: _id },
+                { $set: { items: [] }},
+                { new: true }
+            );
+            for(let i = 0; i < ids.length; i++) {
+                let item = await GroceryList.findOneAndDelete({ _id: ids[i]})
+            };
+            return list;
         },
         addPay: async (parent, args) => {
             const pay = await Pay.create({

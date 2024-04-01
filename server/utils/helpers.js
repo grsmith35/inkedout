@@ -183,7 +183,12 @@ const getBudgetRemainder = (charges, budget, days) => {
         }, 0)
     }
 
-}
+};
+
+const parseIds = (idsString) => {
+    const cleanedString = idsString.replace(/[\[/]]/g);
+    return cleanedString.split(',')
+};
 
 const organizeCharges = async (charges, budgets) => {
     const budgetStatus = budgets?.map((b) => {
@@ -202,4 +207,4 @@ const organizeCharges = async (charges, budgets) => {
     return budgetStatus;
 }
 
-module.exports = { organizeCharges, getBudgetRemainder, nextPayDate, sumUp, getPayDays, createArrayWithDate, getDatesArray }
+module.exports = { organizeCharges, getBudgetRemainder, nextPayDate, sumUp, getPayDays, parseIds, createArrayWithDate, getDatesArray }
