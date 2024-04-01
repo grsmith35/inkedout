@@ -161,18 +161,6 @@ const getBudgetRemainder = (charges, budget, days) => {
             break
     };
 
-    // const bbudget = {
-    //     _id: budget._id,
-    //     name: budget.name,
-    //     amount: weeklyBudget,
-    //     charges: charges,
-    //     remainingAmount : budgetStartingAmount - charges.map((e) => e.amount).reduce((val, acc) => {
-    //         return val + acc;
-    //     }, 0)
-    // };
-
-    // console.log('in budget creator' , bbudget)
-
     return {
         _id: budget._id,
         name: budget.name,

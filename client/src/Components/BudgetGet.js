@@ -22,14 +22,6 @@ export default function BudgetGet() {
         }
     }
 
-    // React.useEffect(() => {
-    //     if(!!state?.accountId) {
-    //         console.log(state.accountId)
-    //         getAccountInfo();
-    //     }
-    // }, [state?.accountId])
-
-
     return (
         <>
         </>

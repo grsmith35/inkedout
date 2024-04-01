@@ -16,6 +16,7 @@ export default function GroceryOptionView() {
     const [state, dispatch] = useStoreContext();
     const [editOption, setEditOption] = React.useState(false);    
     const [addOption, setAddOption] = React.useState(false);
+    const [organizedOptions, setOrganizedOptions] = React.useState([]);
     const [addNewOption] = useMutation(ADD_OPTION);
     const [deleteOption] = useMutation(DELETE_OPTION);
     const [editOptionPatch] = useMutation(EDIT_OPTION);
@@ -109,7 +110,17 @@ export default function GroceryOptionView() {
             });
             setEditOption(false);
         }
-    }
+    };
+
+    function compare( a, b ) {
+        if ( a.name < b.name ){
+          return -1;
+        }
+        if ( a.name > b.name ){
+          return 1;
+        }
+        return 0;
+      };
 
     const handleAddOption = async () => {
         const newOption = await addNewOption({
@@ -143,7 +154,13 @@ export default function GroceryOptionView() {
                 areas: areaData.getAreas
             });
         }
-    }, [areaData])
+    }, [areaData]);
+
+    React.useEffect(() => {
+        if(!!state?.accountOptions) {
+            setOrganizedOptions(() => state.accountOptions.sort(compare))
+        }
+    }, [state?.accountOptions])
 
     if(auth.loggedIn()) {
 
@@ -174,7 +191,7 @@ export default function GroceryOptionView() {
                 <div>
                     <Button variant="primary" className="green-color" onClick={handleOpenModal}>Add Option</Button>
                 </div>
-                {!!state?.accountOptions?.length && (state?.accountOptions?.map((ao) => (
+                {!!state?.accountOptions?.length && (organizedOptions?.map((ao) => (
                             <div className="card m-3" key={ao._id} id={ao._id}>
                                 <div id={ao._id} className="d-flex flex-wrap justify-content-between mt-1 mx-3">
                                     <h4 id={ao._id}>{ao.name}</h4>

@@ -129,6 +129,7 @@ const typeDefs = gql`
         addGroceryItem(name: String!, areaId: ID, listId: ID!, amount: Float, optionId: ID!): GroceryList
         editGroceryItem(_id: ID!, name: String, areaId: ID, listId: ID, amount: Float, quantity: Int): GroceryList
         deleteGroceryItem(_id: ID!, listId: ID!): GroceryList
+        addGroceryOptionAndList(name: String!, areaId: ID, accountId: ID!, listId: ID!): GroceryList
         addList(name: String!, accountId: ID!): List
         editList(_id: ID!, name: String, accountId: ID): List
         deleteList(_id: ID!): List

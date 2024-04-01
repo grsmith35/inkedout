@@ -282,6 +282,20 @@ export const EDIT_GROCERY_ITEM = gql`
     }
 `;
 
+export const ADD_OPTION_AND_ITEM = gql`
+    mutation addGroceryOptionAndList($name: String!, $areaId: ID, $accountId: ID!, $listId: ID!) {
+        addGroceryOptionAndList(name: $name, areaId: $areaId, accountId: $accountId, listId: $listId) {
+            _id
+            name
+            amount
+            areaId
+            listId
+            optionId
+            quantity
+        }
+    }
+`
+
 export const DELETE_GROCERY_ITEM = gql`
     mutation deleteGroceryItem($_id: ID!, $listId: ID!) {
         deleteGroceryItem(_id: $_id, listId: $listId) {

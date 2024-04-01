@@ -26,7 +26,7 @@ export function formFieldCreator(field) {
                 <Form.Label>{field.title}</Form.Label>
                 <InputGroup className="mb-3">
                     <InputGroup.Text>$</InputGroup.Text>
-                    <Form.Control name={field.name} type='number' aria-label="Amount" defaultValue={field?.value > 0 ? field.value : 0}/>
+                    <Form.Control name={field.name} type='number' inputMode='numeric' aria-label="Amount" defaultValue={field?.value > 0 ? field.value : 0}/>
                     {/* <InputGroup.Text>.00</InputGroup.Text> */}
                 </InputGroup>
                 </Form.Group>
@@ -47,7 +47,6 @@ export function formFieldCreator(field) {
             const list = [];
             if(field?.value?.length > 0) {
                 if(field.items.map((i) => i.value).includes(field.value)) {
-                    console.log('includes');
                     list.push(field.items.find((i) => i.value === field.value));
                 } else {
                     list.push({value: null, name: 'Please Select an Option'});

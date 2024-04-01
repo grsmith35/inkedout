@@ -175,6 +175,25 @@ const resolvers = {
             )
             return await GroceryList.findOneAndDelete({ _id: _id });
         },
+        addGroceryOptionAndList: async (parent, { name, areaId, accountId, listId}) => {
+            const option = await GroceryOption.create({
+                name,
+                areaId,
+                accountId,
+            });
+            const item = await GroceryList.create({
+                name,
+                areaId,
+                listId,
+                optionId: option._id
+            });
+            const changedList = await List.findOneAndUpdate(
+                { _id: listId },
+                { $push: { items: item._id }},
+                { new: true }
+            );
+            return item;
+        },
         addList: async (parent, args) => {
             return await List.create(args);
         },
@@ -189,7 +208,6 @@ const resolvers = {
             return await List.findOneAndDelete({ _id: _id });
         },
         deleteAllGroceryItems: async (parent, { _id, itemsList }) => {
-            console.log(_id, itemsList)
             const ids = parseIds(itemsList);
             const list = List.findOneAndUpdate(
                 { _id: _id },

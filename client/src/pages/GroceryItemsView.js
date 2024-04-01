@@ -4,8 +4,8 @@ import Button from 'react-bootstrap/Button';
 import ModalForm from "../Components/ModalForm";
 import { useMutation, useQuery, useLazyQuery } from "@apollo/client";
 import { QUERY_OPTIONS_BY_NAME, QUERY_ITEMS_BY_LIST, QUERY_AREAS } from "../utils/queries";
-import { EDIT_GROCERY_ITEM, ADD_GROCERY_ITEM, DELETE_GROCERY_ITEM } from "../utils/mutations";
-import { UPDATE_ACCOUNT_AREAS, UPDATE_LIST_ITEMS, UPDATE_SEARCHED_OPTIONS } from "../utils/actions";
+import { EDIT_GROCERY_ITEM, ADD_GROCERY_ITEM, DELETE_GROCERY_ITEM, ADD_OPTION_AND_ITEM } from "../utils/mutations";
+import { UPDATE_ACCOUNT_AREAS, UPDATE_LIST_ITEMS, UPDATE_SEARCHED_OPTIONS, UPDATE_OPTIONS_AND_ITEMS } from "../utils/actions";
 import auth from "../utils/auth";
 import { useParams } from "react-router-dom";
 import Login from "./Login";
@@ -24,9 +24,11 @@ export default function GroceryItemsView() {
     const quantityOptions  = [0,1,2,3,4,5,6,7,8,9,10];
     const [addItemAmount] = useMutation(EDIT_GROCERY_ITEM);
     const [removeItem] = useMutation(DELETE_GROCERY_ITEM);
+    const [addOptionAndItem] = useMutation(ADD_OPTION_AND_ITEM);
     const [list, { refetch, data: refetchData }] = useLazyQuery(QUERY_ITEMS_BY_LIST, {
         variables: { listId: listId }
     });
+    const [addItemModal, setAddItemModal] = React.useState(false);
     const [isFocused, setIsFocused] = React.useState(false);
     const [addAmountId, setAddAmountId] = React.useState("");
     const [addAmountModal, setAddAmountModal] = React.useState(false);
@@ -63,6 +65,22 @@ export default function GroceryItemsView() {
             value: ""
         },
     ]);
+
+    const [itemForm, setItemForm] = React.useState([
+        {
+            title: "Option Name",
+            type: "text",
+            name: "name",
+            value: ""
+        },
+        {
+            title: "Area",
+            type: "dropdown",
+            items: state?.areas?.map((a) => { return {value: a._id, name: a.name }}),
+            name: "area",
+            value: "",
+        },
+    ])
 
     const handleCloseModal = (e) => {
         setAddAmountModal(() => false);
@@ -181,6 +199,33 @@ export default function GroceryItemsView() {
         }
     };
 
+    const handleAddOption = async () => {
+        const addedItem = await addOptionAndItem({
+            variables: {
+                name: itemForm[0].value,
+                areaId: itemForm[1].value,
+                listId: listId,
+                accountId: localStorage.getItem('accountId')
+            }
+        });
+        if(!!addedItem) {
+            dispatch({
+                type: UPDATE_LIST_ITEMS,
+                listItems: [...state.listItems, addedItem.data.addGroceryOptionAndList],
+            });
+            setAddItemModal(() => false);
+        }
+    };
+
+    const handleCloseAddItem = () => {
+        setAddItemModal(() => false);
+    };
+
+    const handleAddItemModal = () => {
+        setShowAddList(() => false);
+        setAddItemModal(() => true);
+    }
+
     function compare( a, b ) {
         if ( a.name < b.name ){
           return -1;
@@ -220,12 +265,6 @@ export default function GroceryItemsView() {
     }, [listId]);
 
     React.useEffect(() => {
-        if(showAddList) {
-
-        }
-    }, [showAddList])
-
-    React.useEffect(() => {
         if(!!addAmountId.length) {
             setAddAmountModal(true);
         }
@@ -238,7 +277,7 @@ export default function GroceryItemsView() {
                 listItems: refetchData?.data?.getItemsByList
             })
         }
-    }, [refetchData])
+    }, [refetchData]);
 
     React.useEffect(() => {
         if(!!data) {
@@ -256,7 +295,6 @@ export default function GroceryItemsView() {
     }, [showAddList]);
 
     if(auth.loggedIn()) {
-
         return (
             <>
                 {addAmountModal && (
@@ -268,15 +306,29 @@ export default function GroceryItemsView() {
                         closeDialog={handleCloseModal}
                     />
                 )}
+                {addItemModal && (
+                    <ModalForm
+                        title={'Add Option'}
+                        fields={itemForm}
+                        editFields={setItemForm}
+                        submitFunction={handleAddOption}
+                        closeDialog={handleCloseAddItem}
+                    />
+                )}
+                
                 {showAddList && (
                     <Offcanvas placement="end" show={showAddList} onHide={() => setShowAddList(() => false)}>
+                        
                         <Offcanvas.Header closeButton>
                             <Offcanvas.Title>Grocery Options</Offcanvas.Title>
                         </Offcanvas.Header>
                         <Offcanvas.Body>
                             <form onChange={handleSearchOptions} className='d-flex align-items-around pt-1' onFocus={() => setIsFocused(() => true)} onBlur={() => setIsFocused(() => false)}>
                                 <input id='searchField' name='searchField'></input>
-                                <CheckMarkIcon id={'add-list-icon'}/>Add new Option
+                                <button onClick={handleAddItemModal}>
+
+                                    <CheckMarkIcon id={'add-list-icon'}/>Add new Option
+                                </button>
                             </form>
 
                             <Table striped bordered hover className="px-3">
@@ -315,10 +367,10 @@ export default function GroceryItemsView() {
                     <h3>{state?.accountLists?.find((al) => al._id === listId).name}</h3>
                     <div>
                         <div className='row'>
-                            {`Total: ${!!state?.listItems?.length ? formatCurrency(sumUpAmounts(state?.listItems?.map((li) => li.amount * li.quantity ?? 0))) : formatCurrency(0)}`}
+                            {`Total: ${!!state?.listItems?.length ? formatCurrency(sumUpAmounts(state?.listItems?.map((li) => (!!li.amount ? li.amount : 0) * (!!li.quantity ? li.quantity : 0)))) : formatCurrency(0)}`}
                         </div>
                         <div className="row">
-                            {`Total After Tax: ${!!state?.listItems?.length ? formatCurrency(sumUpAmounts(state?.listItems?.map((li) => li.amount * li.quantity ?? 0)) * 1.03) : formatCurrency(0)}`}
+                            {`Total After Tax: ${!!state?.listItems?.length ? formatCurrency(sumUpAmounts(state?.listItems?.map((li) => (!!li.amount ? li.amount : 0) * (!!li.quantity ? li.quantity : 0))) * 1.03) : formatCurrency(0)}`}
                         </div>
                     </div>
                 </div>

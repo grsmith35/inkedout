@@ -35,9 +35,7 @@ export default function ListsView() {
     );
 
     const handleGetLists = async () => {
-        console.log('in the get')
         const lists = refetch();
-        console.log(lists)
     }
     
     const handleEditList = (e) => {
@@ -148,7 +146,6 @@ export default function ListsView() {
     }, [data]);
 
     React.useEffect(() => {
-        console.log('hitting this');
         handleGetLists();
     }, [])
 
