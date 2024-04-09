@@ -27,7 +27,6 @@ export function formFieldCreator(field) {
                 <InputGroup className="mb-3">
                     <InputGroup.Text>$</InputGroup.Text>
                     <Form.Control name={field.name} type='number' inputMode='decimal' aria-label="Amount" defaultValue={field?.value > 0 ? field.value : 0}/>
-                    {/* <InputGroup.Text>.00</InputGroup.Text> */}
                 </InputGroup>
                 </Form.Group>
             )
